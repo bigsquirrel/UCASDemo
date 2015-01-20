@@ -3,7 +3,6 @@ package com.ivanchou.ucasdemo.ui;
 import android.app.FragmentManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
@@ -23,7 +22,6 @@ import com.ivanchou.ucasdemo.ui.fragment.TimeLineFragment;
  * Created by ivanchou on 1/15/2015.
  */
 public class MainActivity extends BaseActivity {
-
     private String[] mDrawerMenuTitles = {"主页", "已参加"};
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
@@ -42,6 +40,14 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
 
         initMenuDrawer();
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // 默认进入主时间线 fragment
+        selectItem(TIME_LINE_FRAGMENT);
     }
 
     /*

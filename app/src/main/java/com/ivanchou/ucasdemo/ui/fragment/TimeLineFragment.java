@@ -7,33 +7,34 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.Toast;
 
 import com.ivanchou.ucasdemo.R;
+import com.ivanchou.ucasdemo.ui.QuickReturnListView;
 import com.ivanchou.ucasdemo.ui.base.BaseFragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by ivanchou on 1/19/2015.
  */
 public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener{
-    protected final String TAG = this.getClass().getSimpleName();
     private SwipeRefreshLayout mSwipeLayout;
-    private ListView mListView;
-    private ArrayList<String> list = new ArrayList<String>();
+    private QuickReturnListView mListView;
+    private List<String> list;// 测试数据
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        list = new ArrayList<String>();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.listview_maintimeline, container, false);
-        mListView = (ListView) view.findViewById(R.id.lv_maintimeline);
+        mListView = (QuickReturnListView) view.findViewById(R.id.lv_maintimeline);
         mListView.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1,
                 getData()));
 
@@ -45,21 +46,31 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
         return view;
     }
 
-    private ArrayList<String> getData() {
+    /**
+     * 填充假数据
+     * @return
+     */
+    private List<String> getData() {
         list.add("Hello");
-        list.add("This is ivanchou");
+        list.add("I am ivanchou");
         list.add("An Android Developer");
         list.add("Love Open Source");
-        list.add("My GitHub: bigsquirrel");
+        list.add("And this is fake data");
+        list.add("For test listview");
+        for (int i = 0; i < 10; i++) {
+            list.add(i + "");
+        }
         return list;
     }
 
     @Override
     public void onRefresh() {
+        Toast.makeText(context, "Refresh start!", Toast.LENGTH_SHORT).show();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 mSwipeLayout.setRefreshing(false);
+                Toast.makeText(context, "Refresh stop!", Toast.LENGTH_SHORT).show();
             }
         }, 5000);
     }
