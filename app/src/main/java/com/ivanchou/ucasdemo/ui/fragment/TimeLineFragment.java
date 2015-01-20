@@ -147,6 +147,10 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
         return view;
     }
 
+    private void initViews(View view) {
+
+    }
+
     /**
      * 填充假数据
      *
