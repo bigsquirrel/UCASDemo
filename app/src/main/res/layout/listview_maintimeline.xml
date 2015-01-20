@@ -18,15 +18,26 @@
         </android.support.v4.widget.SwipeRefreshLayout>
 
 
-        <LinearLayout
+        <com.ivanchou.ucasdemo.ui.FooterTagsView
             android:id="@+id/footer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:background="#333333">
+
+        </com.ivanchou.ucasdemo.ui.FooterTagsView>
+
+        <LinearLayout
+            android:id="@+id/ll_footer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:background="#333333"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="gone">
             <Button
                 android:id="@+id/btn_1"
                 android:layout_width="wrap_content"
