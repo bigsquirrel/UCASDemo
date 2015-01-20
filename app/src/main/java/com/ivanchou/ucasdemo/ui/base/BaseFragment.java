@@ -2,6 +2,7 @@ package com.ivanchou.ucasdemo.ui.base;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,10 +17,12 @@ import com.ivanchou.ucasdemo.app.Config;
 public class BaseFragment extends Fragment {
     protected final String TAG = this.getClass().getSimpleName();
     private final boolean ISCYCLE = Config.MODE.ISCYCLE;
+    protected Context context;
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        context = getActivity();
         logLifeCycle();
     }
 

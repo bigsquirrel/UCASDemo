@@ -16,7 +16,6 @@ import android.widget.ListView;
 import com.ivanchou.ucasdemo.R;
 import com.ivanchou.ucasdemo.ui.base.BaseActivity;
 import com.ivanchou.ucasdemo.ui.base.BaseFragment;
-import com.ivanchou.ucasdemo.ui.fragment.DetailsFragment;
 import com.ivanchou.ucasdemo.ui.fragment.JointedFragment;
 import com.ivanchou.ucasdemo.ui.fragment.TimeLineFragment;
 
