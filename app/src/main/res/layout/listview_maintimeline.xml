@@ -10,15 +10,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <com.ivanchou.ucasdemo.ui.QuickReturnListView
+            <com.ivanchou.ucasdemo.ui.view.QuickReturnListView
                 android:id="@+id/lv_maintimeline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            </com.ivanchou.ucasdemo.ui.QuickReturnListView>
+            </com.ivanchou.ucasdemo.ui.view.QuickReturnListView>
         </android.support.v4.widget.SwipeRefreshLayout>
 
 
-        <com.ivanchou.ucasdemo.ui.FooterTagsView
+        <com.ivanchou.ucasdemo.ui.view.FooterTagsView
             android:id="@+id/footer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -26,7 +26,7 @@
             android:layout_alignParentLeft="true"
             android:background="#333333">
 
-        </com.ivanchou.ucasdemo.ui.FooterTagsView>
+        </com.ivanchou.ucasdemo.ui.view.FooterTagsView>
 
         <LinearLayout
             android:id="@+id/ll_footer"

@@ -12,13 +12,12 @@ import android.view.ViewTreeObserver;
 import android.view.animation.TranslateAnimation;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ivanchou.ucasdemo.R;
-import com.ivanchou.ucasdemo.ui.FooterTagsView;
-import com.ivanchou.ucasdemo.ui.QuickReturnListView;
+import com.ivanchou.ucasdemo.ui.view.FooterTagsView;
+import com.ivanchou.ucasdemo.ui.view.QuickReturnListView;
 import com.ivanchou.ucasdemo.ui.base.BaseFragment;
 
 import java.util.ArrayList;
@@ -43,6 +42,7 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
     private TranslateAnimation anim;
     private FooterTagsView mQuickReturnView;
     private int mQuickReturnHeight;
+    private ArrayAdapter<String> mListAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,8 +55,8 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
         View view = inflater.inflate(R.layout.listview_maintimeline, container, false);
         mListView = (QuickReturnListView) view.findViewById(R.id.lv_maintimeline);
         mQuickReturnView = (FooterTagsView) view.findViewById(R.id.footer);
-        mListView.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1,
-                getData()));
+        mListAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, getData());
+        mListView.setAdapter(mListAdapter);
 
         mListView.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -146,6 +146,8 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
         mSwipeLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light, android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
+
+
         initTagsView();
         return view;
     }
@@ -156,30 +158,65 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
 
     /**
      * 填充假数据
+     *
      * @return
      */
     private List<String> getData() {
-        list.add("Hello");
-        list.add("I am ivanchou");
-        list.add("An Android Developer");
-        list.add("Love Open Source");
-        list.add("And this is fake data");
-        list.add("For test listview");
-        for (int i = 0; i < 10; i++) {
-            list.add(i + "");
+        list.clear();
+        for (int i = 0; i < 14; i++) {
+            list.add(i + "" + mTags[i % 7]);
+        }
+
+        if (tags == 0) {
+            return list;
+        }
+
+        int tmp;
+        for (int i = 0; i < mTags.length; i++) {
+            tmp = tags;
+            System.out.println(i + ", ------------>" + Integer.toBinaryString(tmp >> i));
+            if (((tmp >> i) & 1) == 0) {
+                for (int j = 0, len = list.size(); j < len; j++) {
+                    System.out.println("i--> " + i + ", j-->" + j);
+                    if (list.get(j).contains(mTags[i])) {
+                        System.out.println("rm -->" + list.get(j));
+                        list.remove(j);
+                        len--;
+                        j--;
+                    }
+                }
+            }
         }
         return list;
     }
 
     String[] mTags = {"足球", "技术", "恋爱", "扯蛋", "英语", "C++", "Android"};
+    int tags = 0;
+
     /**
      * 填充 tag view
      */
     private void initTagsView() {
         LayoutInflater mInflater = LayoutInflater.from(context);
         for (int i = 0; i < mTags.length; i++) {
+            final int tmp = i;
             TextView tv = (TextView) mInflater.inflate(R.layout.textview_tags, mQuickReturnView, false);
             tv.setText(mTags[i]);
+            tv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // 生成 tags 字段
+                    if (((1 << tmp) & tags) != 0) {
+                        tags &= ~(1 << tmp);
+                    } else {
+                        tags |= (1 << tmp);
+                    }
+                    // 刷新 listview
+                    getData();
+                    mListAdapter.notifyDataSetChanged();
+                    Toast.makeText(context, mTags[tmp] + ", " + Integer.toBinaryString(tags), Toast.LENGTH_SHORT).show();
+                }
+            });
             mQuickReturnView.addView(tv);
         }
     }

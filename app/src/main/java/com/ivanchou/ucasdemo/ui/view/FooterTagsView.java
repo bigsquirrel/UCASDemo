@@ -1,4 +1,4 @@
-package com.ivanchou.ucasdemo.ui;
+package com.ivanchou.ucasdemo.ui.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -153,6 +153,7 @@ public class FooterTagsView extends ViewGroup {
             top += lineHeight;
         }
     }
+
 
     @Override
     public LayoutParams generateLayoutParams(AttributeSet attrs) {
