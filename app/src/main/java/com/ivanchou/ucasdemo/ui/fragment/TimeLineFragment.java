@@ -49,6 +49,7 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
     private int mQuickReturnHeight;
     private ArrayAdapter<String> mListAdapter;
     private EventListAdapter mEvenListAdapter;
+    private View footerLodingView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,14 +61,35 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.listview_timeline, container, false);
         mListView = (QuickReturnListView) view.findViewById(R.id.lv_maintimeline);
         footerTagsView = (FooterTagsView) view.findViewById(R.id.ftv_footer);
+        // 初始化底部标签
+        initTagsView();
+
+        // 设置下拉刷新
+        mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        mSwipeLayout.setOnRefreshListener(this);
+        mSwipeLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light, android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
+
+        // 设置 ListView 滚动到底部的加载 bar
+        footerLodingView = inflater.inflate(R.layout.listview_footer_layout, null);
+        mListView.addFooterView(footerLodingView);
+        dismissFooterLodingView();
+
 //        mListAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, getData());
 //        mListView.setAdapter(mListAdapter);
+
+        // 设置 ListView 的 adapter
         initEvenListData();
         mListView.setAdapter(mEvenListAdapter);
 
+
+        // 滑动过程中自动隐藏 tagsview 的计算
         mListView.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
@@ -149,21 +171,36 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
             public void onScrollStateChanged(AbsListView view, int scrollState) {
             }
         });
-
-
-        mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
-        mSwipeLayout.setOnRefreshListener(this);
-        mSwipeLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light, android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
-
-
-        initTagsView();
         return view;
     }
 
-    private void initViews(View view) {
+    protected void showFooterLodingView() {
+        View view = footerLodingView.findViewById(R.id.pb_loding);
+        view.setVisibility(View.VISIBLE);
+        view.setScaleX(1.0f);
+        view.setScaleY(1.0f);
+        view.setAlpha(1.0f);
+        footerLodingView.findViewById(R.id.tv_load_failed).setVisibility(View.GONE);
+    }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    protected void dismissFooterLodingView() {
+        final View progressbar = footerLodingView.findViewById(R.id.pb_loding);
+        progressbar.animate().scaleX(0).scaleY(0).alpha(0.5f).setDuration(300)
+                .withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressbar.setVisibility(View.GONE);
+                    }
+                });
+        footerLodingView.findViewById(R.id.tv_load_failed).setVisibility(View.GONE);
+    }
+
+    protected void showErrorFooterLodingView() {
+        View view = footerLodingView.findViewById(R.id.pb_loding);
+        view.setVisibility(View.GONE);
+        TextView tv = ((TextView) footerLodingView.findViewById(R.id.tv_load_failed));
+        tv.setVisibility(View.VISIBLE);
     }
 
     private void initEvenListData() {

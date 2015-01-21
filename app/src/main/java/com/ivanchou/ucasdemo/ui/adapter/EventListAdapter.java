@@ -64,8 +64,8 @@ public class EventListAdapter extends BaseAdapter {
             viewHolder.startAtTv.setText(event.startAt);
             viewHolder.titleTv.setText(event.title);
             // 设置用户头像跟是否参加的图片标识
-            viewHolder.avatarIv.setImageResource(R.drawable.ic_drawer);
-            viewHolder.jointedIv.setImageResource(R.drawable.ic_drawer);
+//            viewHolder.avatarIv.setImageResource(R.drawable.ic_drawer);
+//            viewHolder.jointedIv.setImageResource(R.drawable.ic_drawer);
         }
 
         return convertView;
