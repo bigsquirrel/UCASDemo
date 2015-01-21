@@ -1,6 +1,8 @@
 package com.ivanchou.ucasdemo.ui.fragment;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -164,7 +166,7 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
     private List<String> getData() {
         list.clear();
         for (int i = 0; i < 14; i++) {
-            list.add(i + "" + mTags[i % 7]);
+            list.add(i + "--" + mTags[i % 7]);
         }
 
         if (tags == 0) {
@@ -203,14 +205,27 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
             TextView tv = (TextView) mInflater.inflate(R.layout.textview_tags, mQuickReturnView, false);
             tv.setText(mTags[i]);
             tv.setOnClickListener(new View.OnClickListener() {
+                @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
                 @Override
                 public void onClick(View v) {
-                    // 生成 tags 字段
+                    int resId;
+                    // 生成 tags 字段，取消选中状态
                     if (((1 << tmp) & tags) != 0) {
+                        resId = R.drawable.tv_unselected_bg;
                         tags &= ~(1 << tmp);
-                    } else {
+                    } else { // 选中状态
+                        resId = R.drawable.tv_selected_bg;
                         tags |= (1 << tmp);
                     }
+
+                    Drawable drawable = getResources().getDrawable(resId);
+                    int sdk = android.os.Build.VERSION.SDK_INT;
+                    if(sdk >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                        v.setBackground(drawable);
+                    } else {
+                        v.setBackgroundDrawable(drawable);
+                    }
+
                     // 刷新 listview
                     getData();
                     mListAdapter.notifyDataSetChanged();
