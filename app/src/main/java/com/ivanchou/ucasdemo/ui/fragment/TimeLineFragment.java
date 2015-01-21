@@ -18,6 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ivanchou.ucasdemo.R;
+import com.ivanchou.ucasdemo.core.bean.Event;
+import com.ivanchou.ucasdemo.ui.adapter.EventListAdapter;
 import com.ivanchou.ucasdemo.ui.view.FooterTagsView;
 import com.ivanchou.ucasdemo.ui.view.QuickReturnListView;
 import com.ivanchou.ucasdemo.ui.base.BaseFragment;
@@ -32,6 +34,7 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
     private SwipeRefreshLayout mSwipeLayout;
     private QuickReturnListView mListView;
     private List<String> list;// 测试数据
+    private List<Event> mEventsList;
 
 
     private static final int STATE_ONSCREEN = 0;
@@ -45,20 +48,25 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
     private FooterTagsView footerTagsView;
     private int mQuickReturnHeight;
     private ArrayAdapter<String> mListAdapter;
+    private EventListAdapter mEvenListAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         list = new ArrayList<String>();
+        mEventsList = new ArrayList<Event>();
+        mEvenListAdapter = new EventListAdapter(context, mEventsList);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.listview_maintimeline, container, false);
+        View view = inflater.inflate(R.layout.listview_timeline, container, false);
         mListView = (QuickReturnListView) view.findViewById(R.id.lv_maintimeline);
         footerTagsView = (FooterTagsView) view.findViewById(R.id.ftv_footer);
-        mListAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, getData());
-        mListView.setAdapter(mListAdapter);
+//        mListAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, getData());
+//        mListView.setAdapter(mListAdapter);
+        initEvenListData();
+        mListView.setAdapter(mEvenListAdapter);
 
         mListView.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -156,6 +164,16 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
 
     private void initViews(View view) {
 
+    }
+
+    private void initEvenListData() {
+
+        for (int i = 0; i < 10; i++) {
+            Event event = new Event();
+            event.startAt = "16:00";
+            event.title = "测试一下";
+            mEventsList.add(event);
+        }
     }
 
     /**

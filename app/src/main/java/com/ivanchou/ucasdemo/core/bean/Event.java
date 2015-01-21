@@ -5,85 +5,34 @@ package com.ivanchou.ucasdemo.core.bean;
  */
 public class Event {
 
-    private long eventId;// 事件 ID
+    public long eventId;// 事件 ID
 
-    private String createdAt;// 事件创建时间
+    public String createdAt;// 事件创建时间
 
-    private int jointed;// 用户对该事件的操作
+    public int jointed;// 用户对该事件的操作
 
-    private User author;// 事件的发布者
+    public User author;// 事件的发布者
 
-    private String startAt;// 事件的开始时间
+    public String startAt;// 事件的开始时间
 
-    private String content;// 事件的详细内容
+    public String title;// 事件的主题
 
-    private long tags;// 事件的标签属性
+    public String content;// 事件的详细内容
 
-    public Event(long eventId, String createdAt, int jointed, User author, String startAt, String content, long tags) {
+    public long tags;// 事件的标签属性
+
+    public Event() {
+
+    }
+
+    public Event(long eventId, String createdAt, int jointed, User author, String startAt, String title, String content, long tags) {
         this.eventId = eventId;
         this.createdAt = createdAt;
         this.jointed = jointed;
         this.author = author;
         this.startAt = startAt;
+        this.title = title;
         this.content = content;
-        this.tags = tags;
-    }
-
-    /*-------------------------------------------- get and set ----------------------------------------*/
-
-    public long getEventId() {
-        return eventId;
-    }
-
-    public void setEventId(long eventId) {
-        this.eventId = eventId;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public int getJointed() {
-        return jointed;
-    }
-
-    public void setJointed(int jointed) {
-        this.jointed = jointed;
-    }
-
-    public User getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(User author) {
-        this.author = author;
-    }
-
-    public String getStartAt() {
-        return startAt;
-    }
-
-    public void setStartAt(String startAt) {
-        this.startAt = startAt;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public long getTags() {
-        return tags;
-    }
-
-    public void setTags(long tags) {
         this.tags = tags;
     }
 
@@ -95,6 +44,7 @@ public class Event {
                 ", jointed=" + jointed +
                 ", author=" + author +
                 ", startAt='" + startAt + '\'' +
+                ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
                 ", tags=" + tags +
                 '}';
