@@ -229,7 +229,7 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
                     // 刷新 listview
                     getData();
                     mListAdapter.notifyDataSetChanged();
-                    Toast.makeText(context, mTags[tmp] + ", " + Integer.toBinaryString(tags), Toast.LENGTH_SHORT).show();
+Toast.makeText(context, mTags[tmp] + ", " + Integer.toBinaryString(tags), Toast.LENGTH_SHORT).show();
                 }
             });
             mQuickReturnView.addView(tv);
@@ -238,12 +238,12 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
 
     @Override
     public void onRefresh() {
-        Toast.makeText(context, "Refresh start!", Toast.LENGTH_SHORT).show();
+Toast.makeText(context, "Refresh start!", Toast.LENGTH_SHORT).show();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 mSwipeLayout.setRefreshing(false);
-                Toast.makeText(context, "Refresh stop!", Toast.LENGTH_SHORT).show();
+Toast.makeText(context, "Refresh stop!", Toast.LENGTH_SHORT).show();
             }
         }, 5000);
     }
