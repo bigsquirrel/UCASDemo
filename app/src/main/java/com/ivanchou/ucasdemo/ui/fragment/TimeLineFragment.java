@@ -81,10 +81,9 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
         mListView.addFooterView(footerLodingView);
         dismissFooterLodingView();
 
+        // 设置 ListView 的 adapter
 //        mListAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, getData());
 //        mListView.setAdapter(mListAdapter);
-
-        // 设置 ListView 的 adapter
         initEvenListData();
         mListView.setAdapter(mEvenListAdapter);
 
