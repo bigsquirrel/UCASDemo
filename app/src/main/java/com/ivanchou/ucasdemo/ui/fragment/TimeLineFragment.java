@@ -42,7 +42,7 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
     private int mMinRawY = 0;
 
     private TranslateAnimation anim;
-    private FooterTagsView mQuickReturnView;
+    private FooterTagsView footerTagsView;
     private int mQuickReturnHeight;
     private ArrayAdapter<String> mListAdapter;
 
@@ -56,7 +56,7 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.listview_maintimeline, container, false);
         mListView = (QuickReturnListView) view.findViewById(R.id.lv_maintimeline);
-        mQuickReturnView = (FooterTagsView) view.findViewById(R.id.footer);
+        footerTagsView = (FooterTagsView) view.findViewById(R.id.ftv_footer);
         mListAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, getData());
         mListView.setAdapter(mListAdapter);
 
@@ -64,7 +64,7 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
-                        mQuickReturnHeight = mQuickReturnView.getHeight();
+                        mQuickReturnHeight = footerTagsView.getHeight();
                         mListView.computeScrollY();
                     }
                 });
@@ -130,9 +130,9 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
                             translationY);
                     anim.setFillAfter(true);
                     anim.setDuration(0);
-                    mQuickReturnView.startAnimation(anim);
+                    footerTagsView.startAnimation(anim);
                 } else {
-                    mQuickReturnView.setTranslationY(translationY);
+                    footerTagsView.setTranslationY(translationY);
                 }
 
             }
@@ -176,12 +176,9 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
         int tmp;
         for (int i = 0; i < mTags.length; i++) {
             tmp = tags;
-            System.out.println(i + ", ------------>" + Integer.toBinaryString(tmp >> i));
             if (((tmp >> i) & 1) == 0) {
                 for (int j = 0, len = list.size(); j < len; j++) {
-                    System.out.println("i--> " + i + ", j-->" + j);
                     if (list.get(j).contains(mTags[i])) {
-                        System.out.println("rm -->" + list.get(j));
                         list.remove(j);
                         len--;
                         j--;
@@ -202,7 +199,7 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
         LayoutInflater mInflater = LayoutInflater.from(context);
         for (int i = 0; i < mTags.length; i++) {
             final int tmp = i;
-            TextView tv = (TextView) mInflater.inflate(R.layout.textview_tags, mQuickReturnView, false);
+            TextView tv = (TextView) mInflater.inflate(R.layout.textview_tags, footerTagsView, false);
             tv.setText(mTags[i]);
             tv.setOnClickListener(new View.OnClickListener() {
                 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -232,7 +229,7 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
 Toast.makeText(context, mTags[tmp] + ", " + Integer.toBinaryString(tags), Toast.LENGTH_SHORT).show();
                 }
             });
-            mQuickReturnView.addView(tv);
+            footerTagsView.addView(tv);
         }
     }
 
