@@ -99,11 +99,19 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
                 });
 
         mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            private boolean isBottom = false;// 是否到达底部
             @SuppressLint("NewApi")
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem,
                                  int visibleItemCount, int totalItemCount) {
+                // 判断是否到底
+                if (firstVisibleItem + visibleItemCount == totalItemCount) {
+                    isBottom = true;
+                } else {
+                    isBottom = false;
+                }
 
+                // 处理滚动过程 tagsview 的显示
                 mScrollY = 0;
                 int translationY = 0;
 
@@ -168,6 +176,11 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
 
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
+                // 滚动到底部且 listview 的状态是空闲
+                if (isBottom && scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+                    // 加载新的数据
+                    showFooterLodingView();
+                }
             }
         });
         return view;
