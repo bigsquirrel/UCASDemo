@@ -14,9 +14,21 @@ import com.ivanchou.ucasdemo.app.Config;
 public class DBHelper extends SQLiteOpenHelper{
 
     private static DBHelper mDBHelper;
+    private static final String EVENT_TABLE_NAME = Config.DATABASE.EVENT_TABLE_NAME;
 
     /** 创建表的 SQL 语句 */
-    private static final String TIMELINE_TABLE_CREATE = "";
+    private static final String EVENT_TABLE_CREATE = "CREATE TABLE " + EVENT_TABLE_NAME + " " +
+            "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+            "create_at INTEGER NOT NULL, " +
+            "jointed INTEGER, " +
+            "author_id INTEGER NOT NULL, " +
+            "start_at INTEGER NOT NULL, " +
+            "place_at TEXT NOT NULL, " +
+            "title TEXT NOT NULL, " +
+            "text TEXT, " +
+            "tags INTEGER NOT NULL, " +
+            "thumbnail_pic TEXT, " +
+            "original_pic TEXT)";
 
     public DBHelper(Context context) {
         super(context, Config.DATABASE.NAME, null, Config.DATABASE.VERSION);
@@ -31,12 +43,12 @@ public class DBHelper extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(TIMELINE_TABLE_CREATE);
+        db.execSQL(EVENT_TABLE_CREATE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS event");
+        db.execSQL("DROP TABLE IF EXISTS " + EVENT_TABLE_NAME);
 
     }
 

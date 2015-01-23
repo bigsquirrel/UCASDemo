@@ -16,8 +16,8 @@ public class Config {
 
 	/** 开发选项设置 **/
 	public static final class MODE {
-		public static final boolean ISDEVEL = false;// 开发者模式
-		public static final boolean ISDEBUG = false;// 调试模式
+		public static final boolean ISDEVEL = true;// 开发者模式
+		public static final boolean ISDEBUG = true;// 调试模式
 		public static final boolean ISCYCLE = true;// 查看Activity、Fragment生命周期
 	}
 
@@ -25,6 +25,7 @@ public class Config {
 	public static final class DATABASE {
 		public static final int VERSION = 1;// 版本
         public static final String NAME = "ucasdemo.db"; // 数据库名
+        public static final String EVENT_TABLE_NAME = "event";
 		public static final String PATH = android.os.Environment
 				.getExternalStorageDirectory().getAbsolutePath()
 				+ "/Android/data/com.ivanchou.ucasdemo/";// 路径

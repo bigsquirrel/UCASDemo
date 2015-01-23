@@ -12,7 +12,6 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.AppCompat.Light" >
-
         <activity
             android:name=".ui.EntranceActivity"
             android:label="@string/app_name" >
@@ -35,6 +34,12 @@
             android:label="@string/title_activity_setting" >
         </activity>
 
+        <provider
+            android:name=".core.EventContentProvider"
+            android:authorities="com.ivanchou.ucasdemo.EventContentProvider"
+            android:enabled="true"
+            android:exported="true" >
+        </provider>
     </application>
 
 </manifest>
