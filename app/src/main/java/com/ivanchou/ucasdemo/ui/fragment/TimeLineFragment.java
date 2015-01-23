@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ivanchou.ucasdemo.R;
+import com.ivanchou.ucasdemo.app.Config;
 import com.ivanchou.ucasdemo.core.bean.Event;
 import com.ivanchou.ucasdemo.ui.adapter.EventListAdapter;
 import com.ivanchou.ucasdemo.ui.view.FooterTagsView;
@@ -31,8 +32,8 @@ import java.util.List;
  * Created by ivanchou on 1/19/2015.
  */
 public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
-    private SwipeRefreshLayout mSwipeLayout;
-    private QuickReturnListView mListView;
+    private SwipeRefreshLayout mSwipeLayout;// 下拉刷新
+    private QuickReturnListView mListView;// tagsview 快速返回
     private List<String> list;// 测试数据
     private List<Event> mEventsList;
 
@@ -79,7 +80,7 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
         // 设置 ListView 滚动到底部的加载 bar
         footerLodingView = inflater.inflate(R.layout.listview_footer_layout, null);
         mListView.addFooterView(footerLodingView);
-        dismissFooterLodingView();
+        dismissFooterLoadingView();
 
         // 设置 ListView 的 adapter
 //        mListAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, getData());
@@ -161,7 +162,6 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
                         break;
                 }
 
-                /** this can be used if the build is below honeycomb **/
                 if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.HONEYCOMB) {
                     anim = new TranslateAnimation(0, 0, translationY,
                             translationY);
@@ -179,14 +179,14 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
                 // 滚动到底部且 listview 的状态是空闲
                 if (isBottom && scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
                     // 加载新的数据
-                    showFooterLodingView();
+                    showFooterLoadingView();
                 }
             }
         });
         return view;
     }
 
-    protected void showFooterLodingView() {
+    private void showFooterLoadingView() {
         View view = footerLodingView.findViewById(R.id.pb_loding);
         view.setVisibility(View.VISIBLE);
         view.setScaleX(1.0f);
@@ -196,7 +196,7 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    protected void dismissFooterLodingView() {
+    private void dismissFooterLoadingView() {
         final View progressbar = footerLodingView.findViewById(R.id.pb_loding);
         progressbar.animate().scaleX(0).scaleY(0).alpha(0.5f).setDuration(300)
                 .withEndAction(new Runnable() {
@@ -208,13 +208,16 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
         footerLodingView.findViewById(R.id.tv_load_failed).setVisibility(View.GONE);
     }
 
-    protected void showErrorFooterLodingView() {
+    private void showErrorFooterLoadingView() {
         View view = footerLodingView.findViewById(R.id.pb_loding);
         view.setVisibility(View.GONE);
         TextView tv = ((TextView) footerLodingView.findViewById(R.id.tv_load_failed));
         tv.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * 填充假数据 card list view
+     */
     private void initEvenListData() {
 
         for (int i = 0; i < 10; i++) {
@@ -226,7 +229,7 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
     }
 
     /**
-     * 填充假数据
+     * 填充假数据 simple list view
      *
      * @return
      */
@@ -293,7 +296,10 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
                     // 刷新 listview
                     getData();
                     mListAdapter.notifyDataSetChanged();
-Toast.makeText(context, mTags[tmp] + ", " + Integer.toBinaryString(tags), Toast.LENGTH_SHORT).show();
+
+                    if (Config.MODE.ISDEBUG) {
+                        Toast.makeText(context, mTags[tmp] + ", " + Integer.toBinaryString(tags), Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
             footerTagsView.addView(tv);
@@ -302,12 +308,16 @@ Toast.makeText(context, mTags[tmp] + ", " + Integer.toBinaryString(tags), Toast.
 
     @Override
     public void onRefresh() {
-Toast.makeText(context, "Refresh start!", Toast.LENGTH_SHORT).show();
+        if (Config.MODE.ISDEBUG) {
+            Toast.makeText(context, "Refresh start!", Toast.LENGTH_SHORT).show();
+        }
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 mSwipeLayout.setRefreshing(false);
-Toast.makeText(context, "Refresh stop!", Toast.LENGTH_SHORT).show();
+                if (Config.MODE.ISDEBUG) {
+                    Toast.makeText(context, "Refresh stop!", Toast.LENGTH_SHORT).show();
+                }
             }
         }, 5000);
     }
