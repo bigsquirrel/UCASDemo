@@ -1,20 +1,18 @@
 package com.ivanchou.ucasdemo.ui.fragment;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.animation.TranslateAnimation;
-import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ivanchou.ucasdemo.R;
@@ -23,6 +21,7 @@ import com.ivanchou.ucasdemo.core.bean.Event;
 import com.ivanchou.ucasdemo.ui.adapter.EventListAdapter;
 import com.ivanchou.ucasdemo.ui.view.FooterTagsView;
 import com.ivanchou.ucasdemo.ui.view.QuickReturnListView;
+import com.ivanchou.ucasdemo.ui.view.QuickReturnListView.DataChangeListener;
 import com.ivanchou.ucasdemo.ui.base.BaseFragment;
 
 import java.util.ArrayList;
@@ -31,26 +30,21 @@ import java.util.List;
 /**
  * Created by ivanchou on 1/19/2015.
  */
-public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
+public class TimeLineFragment extends BaseFragment implements OnRefreshListener, DataChangeListener {
     private SwipeRefreshLayout mSwipeLayout;// 下拉刷新
-    private QuickReturnListView mListView;// tagsview 快速返回
+    private QuickReturnListView mListView;
     private List<String> list;// 测试数据
     private List<Event> mEventsList;
 
-
-    private static final int STATE_ONSCREEN = 0;
-    private static final int STATE_OFFSCREEN = 1;
-    private static final int STATE_RETURNING = 2;
-    private int mState = STATE_ONSCREEN;
-    private int mScrollY;
-    private int mMinRawY = 0;
 
     private TranslateAnimation anim;
     private FooterTagsView footerTagsView;
     private int mQuickReturnHeight;
     private ArrayAdapter<String> mListAdapter;
     private EventListAdapter mEvenListAdapter;
-    private View footerLodingView;
+
+    String[] mTags = {"足球", "技术", "恋爱", "扯蛋", "英语", "C++", "Android"};
+    int tags = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,8 +60,8 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
         View view = inflater.inflate(R.layout.listview_timeline, container, false);
         mListView = (QuickReturnListView) view.findViewById(R.id.lv_maintimeline);
         footerTagsView = (FooterTagsView) view.findViewById(R.id.ftv_footer);
-        // 初始化底部标签
-        initTagsView();
+        mListView.setTagsView(footerTagsView, mTags);
+        mListView.setDataChangeListener(this);
 
         // 设置下拉刷新
         mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
@@ -77,143 +71,15 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
                 android.R.color.holo_red_light);
 
 
-        // 设置 ListView 滚动到底部的加载 bar
-        footerLodingView = inflater.inflate(R.layout.listview_footer_layout, null);
-        mListView.addFooterView(footerLodingView);
-        dismissFooterLoadingView();
-
         // 设置 ListView 的 adapter
 //        mListAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, getData());
 //        mListView.setAdapter(mListAdapter);
         initEvenListData();
         mListView.setAdapter(mEvenListAdapter);
 
-
-        // 滑动过程中自动隐藏 tagsview 的计算
-        mListView.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        mQuickReturnHeight = footerTagsView.getHeight();
-                        mListView.computeScrollY();
-                    }
-                });
-
-        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            private boolean isBottom = false;// 是否到达底部
-            @SuppressLint("NewApi")
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem,
-                                 int visibleItemCount, int totalItemCount) {
-                // 判断是否到底
-                if (firstVisibleItem + visibleItemCount == totalItemCount) {
-                    isBottom = true;
-                } else {
-                    isBottom = false;
-                }
-
-                // 处理滚动过程 tagsview 的显示
-                mScrollY = 0;
-                int translationY = 0;
-
-                if (mListView.scrollYIsComputed()) {
-                    mScrollY = mListView.getComputedScrollY();
-                }
-
-                int rawY = mScrollY;
-
-                switch (mState) {
-                    case STATE_OFFSCREEN:
-                        if (rawY >= mMinRawY) {
-                            mMinRawY = rawY;
-                        } else {
-                            mState = STATE_RETURNING;
-                        }
-                        translationY = rawY;
-                        break;
-
-                    case STATE_ONSCREEN:
-                        if (rawY > mQuickReturnHeight) {
-                            mState = STATE_OFFSCREEN;
-                            mMinRawY = rawY;
-                        }
-                        translationY = rawY;
-                        break;
-
-                    case STATE_RETURNING:
-
-                        translationY = (rawY - mMinRawY) + mQuickReturnHeight;
-
-                        System.out.println(translationY);
-                        if (translationY < 0) {
-                            translationY = 0;
-                            mMinRawY = rawY + mQuickReturnHeight;
-                        }
-
-                        if (rawY == 0) {
-                            mState = STATE_ONSCREEN;
-                            translationY = 0;
-                        }
-
-                        if (translationY > mQuickReturnHeight) {
-                            mState = STATE_OFFSCREEN;
-                            mMinRawY = rawY;
-                        }
-                        break;
-                }
-
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.HONEYCOMB) {
-                    anim = new TranslateAnimation(0, 0, translationY,
-                            translationY);
-                    anim.setFillAfter(true);
-                    anim.setDuration(0);
-                    footerTagsView.startAnimation(anim);
-                } else {
-                    footerTagsView.setTranslationY(translationY);
-                }
-
-            }
-
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-                // 滚动到底部且 listview 的状态是空闲
-                if (isBottom && scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
-                    // 加载新的数据
-                    showFooterLoadingView();
-                }
-            }
-        });
         return view;
     }
 
-    private void showFooterLoadingView() {
-        View view = footerLodingView.findViewById(R.id.pb_loding);
-        view.setVisibility(View.VISIBLE);
-        view.setScaleX(1.0f);
-        view.setScaleY(1.0f);
-        view.setAlpha(1.0f);
-        footerLodingView.findViewById(R.id.tv_load_failed).setVisibility(View.GONE);
-    }
-
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private void dismissFooterLoadingView() {
-        final View progressbar = footerLodingView.findViewById(R.id.pb_loding);
-        progressbar.animate().scaleX(0).scaleY(0).alpha(0.5f).setDuration(300)
-                .withEndAction(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressbar.setVisibility(View.GONE);
-                    }
-                });
-        footerLodingView.findViewById(R.id.tv_load_failed).setVisibility(View.GONE);
-    }
-
-    private void showErrorFooterLoadingView() {
-        View view = footerLodingView.findViewById(R.id.pb_loding);
-        view.setVisibility(View.GONE);
-        TextView tv = ((TextView) footerLodingView.findViewById(R.id.tv_load_failed));
-        tv.setVisibility(View.VISIBLE);
-    }
 
     /**
      * 填充假数据 card list view
@@ -259,52 +125,6 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
         return list;
     }
 
-    String[] mTags = {"足球", "技术", "恋爱", "扯蛋", "英语", "C++", "Android"};
-    int tags = 0;
-
-    /**
-     * 填充 tag view
-     */
-    private void initTagsView() {
-        LayoutInflater mInflater = LayoutInflater.from(context);
-        for (int i = 0; i < mTags.length; i++) {
-            final int tmp = i;
-            TextView tv = (TextView) mInflater.inflate(R.layout.textview_tags, footerTagsView, false);
-            tv.setText(mTags[i]);
-            tv.setOnClickListener(new View.OnClickListener() {
-                @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-                @Override
-                public void onClick(View v) {
-                    int resId;
-                    // 生成 tags 字段，取消选中状态
-                    if (((1 << tmp) & tags) != 0) {
-                        resId = R.drawable.tv_unselected_bg;
-                        tags &= ~(1 << tmp);
-                    } else { // 选中状态
-                        resId = R.drawable.tv_selected_bg;
-                        tags |= (1 << tmp);
-                    }
-
-                    Drawable drawable = getResources().getDrawable(resId);
-                    int sdk = android.os.Build.VERSION.SDK_INT;
-                    if(sdk >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                        v.setBackground(drawable);
-                    } else {
-                        v.setBackgroundDrawable(drawable);
-                    }
-
-                    // 刷新 listview
-                    getData();
-                    mListAdapter.notifyDataSetChanged();
-
-                    if (Config.MODE.ISDEBUG) {
-                        Toast.makeText(context, mTags[tmp] + ", " + Integer.toBinaryString(tags), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-            footerTagsView.addView(tv);
-        }
-    }
 
     @Override
     public void onRefresh() {
@@ -321,4 +141,43 @@ public class TimeLineFragment extends BaseFragment implements SwipeRefreshLayout
             }
         }, 5000);
     }
+
+    @Override
+    public void onLoadMore() {
+        Log.e(TAG, "----on load more----");
+
+        // 从网络加载更多的数据
+
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    public void onRefresh(View v, int position) {
+        int resId;
+        // 生成 tags 字段，取消选中状态
+        if (((1 << position) & tags) != 0) {
+            resId = R.drawable.tv_unselected_bg;
+            tags &= ~(1 << position);
+        } else { // 选中状态
+            resId = R.drawable.tv_selected_bg;
+            tags |= (1 << position);
+        }
+
+        Drawable drawable = getResources().getDrawable(resId);
+        int sdk = android.os.Build.VERSION.SDK_INT;
+        if(sdk >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            v.setBackground(drawable);
+        } else {
+            v.setBackgroundDrawable(drawable);
+        }
+
+        // 刷新 listview
+        getData();
+        mListAdapter.notifyDataSetChanged();
+
+        if (Config.MODE.ISDEBUG) {
+            Toast.makeText(context, mTags[position] + ", " + Integer.toBinaryString(tags), Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }
