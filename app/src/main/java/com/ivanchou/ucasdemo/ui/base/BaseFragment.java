@@ -19,6 +19,10 @@ public class BaseFragment extends Fragment {
     private final boolean ISCYCLE = Config.MODE.ISCYCLE;
     protected Context context;
 
+    /**
+     * 当 fragment 和 activity 关联之后，回调 onAttach
+     * @param activity
+     */
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -72,6 +76,15 @@ public class BaseFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        logLifeCycle();
+    }
+
+    /**
+     * 当 fragment 和 activity 分离的时候，回调 onDetach
+     */
+    @Override
+    public void onDetach() {
+        super.onDetach();
         logLifeCycle();
     }
 

@@ -1,6 +1,7 @@
 package com.ivanchou.ucasdemo.ui.fragment;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;

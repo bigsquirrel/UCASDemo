@@ -42,7 +42,7 @@ public class QuickReturnListView extends ListView implements OnScrollListener {
     private TranslateAnimation anim;
 
     private LayoutInflater mInflater;
-    private DataChangeListener dataChangeListener;
+    private DataChangeListener mCallbacks;
 
     public QuickReturnListView(Context context) {
         this(context, null);
@@ -68,7 +68,7 @@ public class QuickReturnListView extends ListView implements OnScrollListener {
     }
 
     public void setTagsView(FooterTagsView tagsView, String[] tags) {
-        if (mFooterTagsView != null) {
+        if (mFooterTagsView == null) {
             mFooterTagsView = tagsView;
         }
         mTags = tags;
@@ -95,15 +95,15 @@ public class QuickReturnListView extends ListView implements OnScrollListener {
                 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
                 @Override
                 public void onClick(View v) {
-                      dataChangeListener.onRefresh(v, position);
+                      mCallbacks.onRefresh(v, position);
                 }
             });
             mFooterTagsView.addView(tv);
         }
     }
 
-    public void setDataChangeListener(DataChangeListener dataChangeListener) {
-        this.dataChangeListener = dataChangeListener;
+    public void setDataChangeListener(DataChangeListener listener) {
+        this.mCallbacks = listener;
     }
 
     public interface DataChangeListener {
@@ -163,7 +163,7 @@ public class QuickReturnListView extends ListView implements OnScrollListener {
         if (isBottom && scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
             // 加载新的数据
             showFooterLoadingView();
-            dataChangeListener.onLoadMore();
+            mCallbacks.onLoadMore();
         }
     }
 
