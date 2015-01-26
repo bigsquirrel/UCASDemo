@@ -1,7 +1,6 @@
 package com.ivanchou.ucasdemo.ui.fragment;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -179,6 +178,11 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
         if (Config.MODE.ISDEBUG) {
             Toast.makeText(context, mTags[position] + ", " + Integer.toBinaryString(tags), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onLongClickRefresh(View v, int position) {
+        Log.e(TAG, "----on long click refresh----");
     }
 
 }

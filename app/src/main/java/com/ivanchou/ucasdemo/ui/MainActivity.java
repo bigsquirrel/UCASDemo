@@ -20,7 +20,6 @@ import com.ivanchou.ucasdemo.ui.fragment.TimeLineFragment;
  * Created by ivanchou on 1/15/2015.
  */
 public class MainActivity extends BaseActivity implements NavigationDrawerCallback{
-    private String[] mDrawerMenuTitles = {"主页", "已参加"};
     private CharSequence mTitle;
 
     private static final int TIME_LINE_FRAGMENT = 0;
@@ -55,16 +54,17 @@ public class MainActivity extends BaseActivity implements NavigationDrawerCallba
                 if (mTimeLineFragment == null) {
                     mTimeLineFragment = new TimeLineFragment();
                 }
+                mTitle = getString(R.string.drawer_item_timeline);
                 fragmentTransaction.replace(R.id.content_frame, mTimeLineFragment);
                 break;
             case JOINTED_FRAGMENT:
                 if (mJointedFragment == null) {
                     mJointedFragment = new JointedFragment();
                 }
+                mTitle = getString(R.string.drawer_item_jointed);
                 fragmentTransaction.replace(R.id.content_frame, mJointedFragment);
                 break;
         }
-        mTitle = mDrawerMenuTitles[position];
         setTitle(mTitle);
         fragmentTransaction.commit();
     }

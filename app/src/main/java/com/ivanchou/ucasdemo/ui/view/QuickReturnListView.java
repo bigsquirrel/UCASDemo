@@ -92,10 +92,16 @@ public class QuickReturnListView extends ListView implements OnScrollListener {
             TextView tv = (TextView) mInflater.inflate(R.layout.textview_tags, mFooterTagsView, false);
             tv.setText(mTags[i]);
             tv.setOnClickListener(new View.OnClickListener() {
-                @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
                 @Override
                 public void onClick(View v) {
-                      mCallbacks.onRefresh(v, position);
+                    mCallbacks.onRefresh(v, position);
+                }
+            });
+            tv.setOnLongClickListener(new OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    mCallbacks.onLongClickRefresh(v, position);
+                    return true;
                 }
             });
             mFooterTagsView.addView(tv);
@@ -118,6 +124,13 @@ public class QuickReturnListView extends ListView implements OnScrollListener {
          * @param position
          */
         public void onRefresh(View v, int position);
+
+        /**
+         * 长按实现单选
+         * @param v
+         * @param position
+         */
+        public void onLongClickRefresh(View v, int position);
     }
 
     public int getListHeight() {
