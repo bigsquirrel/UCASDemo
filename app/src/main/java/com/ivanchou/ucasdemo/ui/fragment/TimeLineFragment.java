@@ -17,7 +17,7 @@ import android.widget.Toast;
 
 import com.ivanchou.ucasdemo.R;
 import com.ivanchou.ucasdemo.app.Config;
-import com.ivanchou.ucasdemo.core.bean.Event;
+import com.ivanchou.ucasdemo.core.model.EventModel;
 import com.ivanchou.ucasdemo.ui.adapter.EventListAdapter;
 import com.ivanchou.ucasdemo.ui.view.FooterTagsView;
 import com.ivanchou.ucasdemo.ui.view.QuickReturnListView;
@@ -34,7 +34,7 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
     private SwipeRefreshLayout mSwipeLayout;// 下拉刷新
     private QuickReturnListView mListView;
     private List<String> list;// 测试数据
-    private List<Event> mEventsList;
+    private List<EventModel> mEventsList;
 
 
     private TranslateAnimation anim;
@@ -50,7 +50,7 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         list = new ArrayList<String>();
-        mEventsList = new ArrayList<Event>();
+        mEventsList = new ArrayList<EventModel>();
         mEvenListAdapter = new EventListAdapter(context, mEventsList);
     }
 
@@ -87,7 +87,7 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
     private void initEvenListData() {
 
         for (int i = 0; i < 10; i++) {
-            Event event = new Event();
+            EventModel event = new EventModel();
             event.startAt = "16:00";
             event.title = "测试一下";
             mEventsList.add(event);

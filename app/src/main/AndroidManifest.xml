@@ -35,8 +35,8 @@
         </activity>
 
         <provider
-            android:name=".core.EventContentProvider"
-            android:authorities="com.ivanchou.ucasdemo.EventContentProvider"
+            android:name=".core.DataProvider"
+            android:authorities="com.ivanchou.ucasdemo"
             android:enabled="true"
             android:exported="true" >
         </provider>

@@ -26,7 +26,8 @@ public class Config {
 		public static final int VERSION = 1;// 版本
         public static final String NAME = "ucasdemo.db"; // 数据库名
         public static final String EVENT_TABLE_NAME = "event";
-		public static final String PATH = android.os.Environment
+        public static final String TAG_TABLE_NAME = "tag";
+        public static final String PATH = android.os.Environment
 				.getExternalStorageDirectory().getAbsolutePath()
 				+ "/Android/data/com.ivanchou.ucasdemo/";// 路径
 

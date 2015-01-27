@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.ivanchou.ucasdemo.app.Config;
 import com.ivanchou.ucasdemo.app.UcasApp;
-import com.ivanchou.ucasdemo.core.bean.BaseSerial;
+import com.ivanchou.ucasdemo.core.model.BaseSerial;
 
 /**
  * Created by ivanchou on 1/15/2015.

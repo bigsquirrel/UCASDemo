@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ivanchou.ucasdemo.R;
-import com.ivanchou.ucasdemo.core.bean.Event;
+import com.ivanchou.ucasdemo.core.model.EventModel;
 
 import java.util.List;
 
@@ -20,9 +20,9 @@ public class EventListAdapter extends BaseAdapter {
 
     private Context mContext;
     private LayoutInflater mInflater;
-    private List<Event> mEventsList;
+    private List<EventModel> mEventsList;
 
-    public EventListAdapter(Context context, List<Event> eventsList) {
+    public EventListAdapter(Context context, List<EventModel> eventsList) {
         mContext = context;
         this.mInflater = LayoutInflater.from(mContext);
         this.mEventsList = eventsList;
@@ -60,7 +60,7 @@ public class EventListAdapter extends BaseAdapter {
 
         // 填充数据
         if (mEventsList.size() > 0) {
-            Event event = mEventsList.get(position);
+            EventModel event = mEventsList.get(position);
             viewHolder.startAtTv.setText(event.startAt);
             viewHolder.titleTv.setText(event.title);
             // 设置用户头像跟是否参加的图片标识
