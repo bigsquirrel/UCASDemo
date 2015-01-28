@@ -17,6 +17,8 @@ import android.widget.Toast;
 
 import com.ivanchou.ucasdemo.R;
 import com.ivanchou.ucasdemo.app.Config;
+import com.ivanchou.ucasdemo.core.db.EventsDataHelper;
+import com.ivanchou.ucasdemo.core.db.TagsDataHelper;
 import com.ivanchou.ucasdemo.core.model.EventModel;
 import com.ivanchou.ucasdemo.ui.adapter.EventListAdapter;
 import com.ivanchou.ucasdemo.ui.view.FooterTagsView;
@@ -42,6 +44,12 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
     private int mQuickReturnHeight;
     private ArrayAdapter<String> mListAdapter;
     private EventListAdapter mEvenListAdapter;
+    private EventsDataHelper mEventsDataHelper;
+    private TagsDataHelper mTagsDataHelper;
+
+    private int mPage;
+    private boolean mLoadFromCache;
+
 
     String[] mTags = {"足球", "技术", "恋爱", "扯蛋", "英语", "C++", "Android"};
     int tags = 0;
@@ -67,7 +75,8 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
         mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         mSwipeLayout.setOnRefreshListener(this);
         mSwipeLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light, android.R.color.holo_orange_light,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
 
@@ -80,68 +89,66 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
         return view;
     }
 
-
-    /**
-     * 填充假数据 card list view
-     */
-    private void initEvenListData() {
-
-        for (int i = 0; i < 10; i++) {
-            EventModel event = new EventModel();
-            event.startAt = "16:00";
-            event.title = "测试一下";
-            mEventsList.add(event);
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (mTagsDataHelper.query().length == 0) {
+            // 标签为空则清空所有
+            mEventsDataHelper.empty();
+            getTagsData();
+        } else {
+            getEventsData();
         }
     }
 
     /**
-     * 填充假数据 simple list view
-     *
-     * @return
+     * 从服务器获取标签信息
      */
-    private List<String> getData() {
-        list.clear();
-        for (int i = 0; i < 14; i++) {
-            list.add(i + "--" + mTags[i % 7]);
-        }
+    public void getTagsData() {
+        // 首先获得所有标签信息存入数据库
+        // 再获取所有活动 调用 getEventsData
+    }
 
-        if (tags == 0) {
-            return list;
+    /**
+     * 加载活动
+     */
+    public void getEventsData() {
+        if (mEventsDataHelper.query().length == 0) {
+            // 第一次载入若数据库为空，则请求服务器
+            mPage = 1;
+            getData();
+            mLoadFromCache = false;
+        } else {
+            // 否则加载数据库缓存
+            mLoadFromCache = true;
         }
+    }
 
-        int tmp;
-        for (int i = 0; i < mTags.length; i++) {
-            tmp = tags;
-            if (((tmp >> i) & 1) == 0) {
-                for (int j = 0, len = list.size(); j < len; j++) {
-                    if (list.get(j).contains(mTags[i])) {
-                        list.remove(j);
-                        len--;
-                        j--;
-                    }
-                }
-            }
+    /**
+     * 从服务器获取活动
+     */
+    public void getData() {
+        if (mPage == 1) {
+            mLoadFromCache = false;
         }
-        return list;
+        // 加载活动
+
     }
 
 
+    /**
+     * 下拉刷新的回调
+     */
     @Override
     public void onRefresh() {
-        if (Config.MODE.ISDEBUG) {
-            Toast.makeText(context, "Refresh start!", Toast.LENGTH_SHORT).show();
-        }
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mSwipeLayout.setRefreshing(false);
-                if (Config.MODE.ISDEBUG) {
-                    Toast.makeText(context, "Refresh stop!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }, 5000);
+        mPage = 1;
+        getData();
+//        mSwipeLayout.setRefreshing(true);
     }
 
+    /**
+     * 滚送到底部的回调
+     */
     @Override
     public void onLoadMore() {
         Log.e(TAG, "----on load more----");
@@ -150,9 +157,14 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
 
     }
 
+    /**
+     * 点击标签触发的回调
+     * @param v
+     * @param position
+     */
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
-    public void onRefresh(View v, int position) {
+    public void onTagClickRefresh(View v, int position) {
         int resId;
         // 生成 tags 字段，取消选中状态
         if (((1 << position) & tags) != 0) {
@@ -180,9 +192,60 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
         }
     }
 
+    /**
+     * 长按标签触发的回调，长按的事件定义为单选
+     * @param v
+     * @param position
+     */
     @Override
-    public void onLongClickRefresh(View v, int position) {
+    public void onTagLongClickRefresh(View v, int position) {
         Log.e(TAG, "----on long click refresh----");
     }
+
+
+    /**
+     * 填充假数据 card list view
+     */
+    private void initEvenListData() {
+
+        for (int i = 0; i < 10; i++) {
+            EventModel event = new EventModel();
+            event.startAt = "16:00";
+            event.title = "测试一下";
+            mEventsList.add(event);
+        }
+    }
+
+
+//    /**
+//     * 填充假数据 simple list view
+//     *
+//     * @return
+//     */
+//    private List<String> getData() {
+//        list.clear();
+//        for (int i = 0; i < 14; i++) {
+//            list.add(i + "--" + mTags[i % 7]);
+//        }
+//
+//        if (tags == 0) {
+//            return list;
+//        }
+//
+//        int tmp;
+//        for (int i = 0; i < mTags.length; i++) {
+//            tmp = tags;
+//            if (((tmp >> i) & 1) == 0) {
+//                for (int j = 0, len = list.size(); j < len; j++) {
+//                    if (list.get(j).contains(mTags[i])) {
+//                        list.remove(j);
+//                        len--;
+//                        j--;
+//                    }
+//                }
+//            }
+//        }
+//        return list;
+//    }
 
 }

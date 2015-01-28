@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 /**
@@ -56,11 +57,13 @@ public abstract class BaseDataHelper {
         return new CursorLoader(context, getContentUri(), projection, selection, selectionArgs, sortOrder);
     }
 
-    public int deleteAll() {
-        return 0;
-    }
-
     public CursorLoader getCursorLoader() {
         return new CursorLoader(mContext, getContentUri(), null, null, null, null);
     }
+
+    public int empty() {
+        return delete(null, null);
+    }
+
+
 }

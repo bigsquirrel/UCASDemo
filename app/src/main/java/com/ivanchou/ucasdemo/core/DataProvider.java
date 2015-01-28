@@ -18,6 +18,13 @@ public class DataProvider extends ContentProvider {
     protected final String TAG = this.getClass().getSimpleName();
 
     private static final String AUTHORITY = "com.ivanchou.ucasdemo";
+    private static final String SCHEME = "content://";
+    private static final String PATH_TAGS = "/tags";
+    private static final String PATH_EVENTS = "/events";
+
+    public static final Uri TAGS_CONTENT_URI = Uri.parse(SCHEME + AUTHORITY + PATH_TAGS);
+    public static final Uri EVENTS_CONTENT_URI = Uri.parse(SCHEME + AUTHORITY + PATH_EVENTS);
+
     private static final int EVENT = 1;// 单条消息
     private static final int EVENTS = 2;// 全部消息
     private static final int TAGS = 3;// 全部标签
@@ -29,11 +36,9 @@ public class DataProvider extends ContentProvider {
 
     private DBHelper dbHelper;
 
-    public DataProvider() {
-    }
-
     @Override
     public boolean onCreate() {
+        dbHelper = new DBHelper(getContext());
         return true;
     }
 
@@ -157,10 +162,10 @@ public class DataProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)){
             case EVENT:
             case EVENTS:
-                table = Config.DATABASE.EVENT_TABLE_NAME;
+                table = Config.DATABASE.EVENTS_TABLE_NAME;
                 break;
             case TAGS:
-                table = Config.DATABASE.TAG_TABLE_NAME;
+                table = Config.DATABASE.TAGS_TABLE_NAME;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Uri" + uri);

@@ -1,19 +1,19 @@
 package com.ivanchou.ucasdemo.core.db;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.ivanchou.ucasdemo.app.Config;
+import com.ivanchou.ucasdemo.core.dbinfo.EventsDBInfo;
+import com.ivanchou.ucasdemo.core.dbinfo.TagsDBInfo;
 
 /**
  * Created by ivanchou on 1/21/2015.
  */
 public class DBHelper extends SQLiteOpenHelper{
 
-    private static final String EVENT_TABLE_NAME = Config.DATABASE.EVENT_TABLE_NAME;
+    private static final String EVENT_TABLE_NAME = Config.DATABASE.EVENTS_TABLE_NAME;
 
     /** 创建表的 SQL 语句 */
     private static final String EVENT_TABLE_CREATE = "CREATE TABLE " + EVENT_TABLE_NAME + " " +
@@ -35,13 +35,16 @@ public class DBHelper extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(EVENT_TABLE_CREATE);
+//        db.execSQL(EVENT_TABLE_CREATE);
+        EventsDBInfo.TABLE.create(db);
+        TagsDBInfo.TABLE.create(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + EVENT_TABLE_NAME);
-
+//        db.execSQL("DROP TABLE IF EXISTS " + EVENT_TABLE_NAME);
+        EventsDBInfo.TABLE.drop(db);
+        TagsDBInfo.TABLE.drop(db);
     }
 
 }

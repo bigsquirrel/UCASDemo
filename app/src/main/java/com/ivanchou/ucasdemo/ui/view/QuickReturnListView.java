@@ -94,13 +94,13 @@ public class QuickReturnListView extends ListView implements OnScrollListener {
             tv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mCallbacks.onRefresh(v, position);
+                    mCallbacks.onTagClickRefresh(v, position);
                 }
             });
             tv.setOnLongClickListener(new OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    mCallbacks.onLongClickRefresh(v, position);
+                    mCallbacks.onTagLongClickRefresh(v, position);
                     return true;
                 }
             });
@@ -123,14 +123,14 @@ public class QuickReturnListView extends ListView implements OnScrollListener {
          * @param v
          * @param position
          */
-        public void onRefresh(View v, int position);
+        public void onTagClickRefresh(View v, int position);
 
         /**
          * 长按实现单选
          * @param v
          * @param position
          */
-        public void onLongClickRefresh(View v, int position);
+        public void onTagLongClickRefresh(View v, int position);
     }
 
     public int getListHeight() {
