@@ -14,6 +14,7 @@ import com.ivanchou.ucasdemo.core.model.EventModel;
 import java.util.List;
 
 /**
+ * @deprecated
  * Created by ivanchou on 1/21/2015.
  */
 public class EventListAdapter extends BaseAdapter {

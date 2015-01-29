@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 import com.ivanchou.ucasdemo.app.Config;
 import com.ivanchou.ucasdemo.core.db.DBHelper;
@@ -38,12 +39,18 @@ public class DataProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
+        if (Config.MODE.ISDEBUG) {
+            Log.e(TAG, " --------- on create ");
+        }
         dbHelper = new DBHelper(getContext());
         return true;
     }
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
+        if (Config.MODE.ISDEBUG) {
+            Log.e(TAG, " --------- insert ");
+        }
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         long rowId = 0;
         db.beginTransaction();
@@ -67,6 +74,9 @@ public class DataProvider extends ContentProvider {
 
     @Override
     public int bulkInsert(Uri uri, ContentValues[] values) {
+        if (Config.MODE.ISDEBUG) {
+            Log.e(TAG, " --------- bulk insert ");
+        }
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.beginTransaction();
         try {
@@ -86,13 +96,16 @@ public class DataProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
+        if (Config.MODE.ISDEBUG) {
+            Log.e(TAG, " ---------  delete ");
+        }
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         int count = -1;
         db.beginTransaction();
         try {
             count = db.delete(matchTable(uri), selection, selectionArgs);
-            db.beginTransaction();
+            db.setTransactionSuccessful();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -106,13 +119,16 @@ public class DataProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues values, String selection,
                       String[] selectionArgs) {
+        if (Config.MODE.ISDEBUG) {
+            Log.e(TAG, " --------- update  ");
+        }
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         int count = -1;
         db.beginTransaction();
         try {
             count = db.update(matchTable(uri), values, selection, selectionArgs);
-            db.beginTransaction();
+            db.setTransactionSuccessful();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -126,6 +142,10 @@ public class DataProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
+        if (Config.MODE.ISDEBUG) {
+            Log.e(TAG, " --------- query ");
+        }
+
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         queryBuilder.setTables(matchTable(uri));
 

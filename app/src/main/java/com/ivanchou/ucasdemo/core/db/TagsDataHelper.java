@@ -3,6 +3,8 @@ package com.ivanchou.ucasdemo.core.db;
 import android.content.Context;
 import android.net.Uri;
 
+import com.ivanchou.ucasdemo.app.Config;
+import com.ivanchou.ucasdemo.core.DataProvider;
 import com.ivanchou.ucasdemo.core.model.TagModel;
 
 /**
@@ -15,15 +17,15 @@ public class TagsDataHelper extends BaseDataHelper {
 
     @Override
     protected Uri getContentUri() {
-        return null;
+        return DataProvider.TAGS_CONTENT_URI;
     }
 
     @Override
     protected String getTableName() {
-        return null;
+        return Config.DATABASE.TAGS_TABLE_NAME;
     }
 
     public TagModel[] query() {
-        return null;
+        return new TagModel[0];
     }
 }

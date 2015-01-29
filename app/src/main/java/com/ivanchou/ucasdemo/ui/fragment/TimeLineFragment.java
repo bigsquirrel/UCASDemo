@@ -1,17 +1,18 @@
 package com.ivanchou.ucasdemo.ui.fragment;
 
 import android.annotation.TargetApi;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Loader;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.TranslateAnimation;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -20,7 +21,7 @@ import com.ivanchou.ucasdemo.app.Config;
 import com.ivanchou.ucasdemo.core.db.EventsDataHelper;
 import com.ivanchou.ucasdemo.core.db.TagsDataHelper;
 import com.ivanchou.ucasdemo.core.model.EventModel;
-import com.ivanchou.ucasdemo.ui.adapter.EventListAdapter;
+import com.ivanchou.ucasdemo.ui.adapter.EventCursorAdapter;
 import com.ivanchou.ucasdemo.ui.view.FooterTagsView;
 import com.ivanchou.ucasdemo.ui.view.QuickReturnListView;
 import com.ivanchou.ucasdemo.ui.view.QuickReturnListView.DataChangeListener;
@@ -32,18 +33,16 @@ import java.util.List;
 /**
  * Created by ivanchou on 1/19/2015.
  */
-public class TimeLineFragment extends BaseFragment implements OnRefreshListener, DataChangeListener {
+public class TimeLineFragment extends BaseFragment implements OnRefreshListener, DataChangeListener, LoaderCallbacks<Cursor> {
     private SwipeRefreshLayout mSwipeLayout;// 下拉刷新
     private QuickReturnListView mListView;
     private List<String> list;// 测试数据
     private List<EventModel> mEventsList;
 
 
-    private TranslateAnimation anim;
     private FooterTagsView footerTagsView;
-    private int mQuickReturnHeight;
     private ArrayAdapter<String> mListAdapter;
-    private EventListAdapter mEvenListAdapter;
+    private EventCursorAdapter mEventCursorAdapter;
     private EventsDataHelper mEventsDataHelper;
     private TagsDataHelper mTagsDataHelper;
 
@@ -59,7 +58,10 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
         super.onCreate(savedInstanceState);
         list = new ArrayList<String>();
         mEventsList = new ArrayList<EventModel>();
-        mEvenListAdapter = new EventListAdapter(context, mEventsList);
+        mEventsDataHelper = new EventsDataHelper(context);
+        mTagsDataHelper = new TagsDataHelper(context);
+        mEventCursorAdapter = new EventCursorAdapter(context);
+
     }
 
     @Override
@@ -70,6 +72,7 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
         footerTagsView = (FooterTagsView) view.findViewById(R.id.ftv_footer);
         mListView.setTagsView(footerTagsView, mTags);
         mListView.setDataChangeListener(this);
+        mListView.setAdapter(mEventCursorAdapter);
 
         // 设置下拉刷新
         mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
@@ -83,8 +86,9 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
         // 设置 ListView 的 adapter
 //        mListAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, getData());
 //        mListView.setAdapter(mListAdapter);
-        initEvenListData();
-        mListView.setAdapter(mEvenListAdapter);
+//        initEvenListData();
+//        mListView.setAdapter(mEvenListAdapter);
+        getLoaderManager().initLoader(0, null, this);
 
         return view;
     }
@@ -94,7 +98,7 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
         super.onActivityCreated(savedInstanceState);
         if (mTagsDataHelper.query().length == 0) {
             // 标签为空则清空所有
-            mEventsDataHelper.empty();
+//            mEventsDataHelper.empty();
             getTagsData();
         } else {
             getEventsData();
@@ -202,6 +206,26 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
         Log.e(TAG, "----on long click refresh----");
     }
 
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Log.e(TAG, "-------on create loader-----");
+        return mEventsDataHelper.getCursorLoader();
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.e(TAG, "-------on load finished-----");
+
+        mEventCursorAdapter.changeCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        Log.e(TAG, "-------on loader reset-----");
+
+        mEventCursorAdapter.changeCursor(null);
+    }
 
     /**
      * 填充假数据 card list view

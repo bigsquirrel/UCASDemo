@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.ivanchou.ucasdemo.app.Config;
 import com.ivanchou.ucasdemo.app.UcasApp;
-import com.ivanchou.ucasdemo.core.model.BaseSerial;
+//import com.ivanchou.ucasdemo.core.model.BaseSerial;
 
 /**
  * Created by ivanchou on 1/15/2015.
@@ -24,9 +24,9 @@ public class BaseActivity extends ActionBarActivity {
         logLifeCycle();
     }
 
-    protected <V extends BaseSerial> V getSerializableExtra(final String name) {
-        return (V) getIntent().getSerializableExtra(name);
-    }
+//    protected <V extends BaseSerial> V getSerializableExtra(final String name) {
+//        return (V) getIntent().getSerializableExtra(name);
+//    }
 
     /**
      * Get intent extra
