@@ -10,5 +10,6 @@ public class BaseTagsDBInfo implements BaseColumns {
 
     public static final String TAG_ID = "tag_id";
     public static final String TAG_NAME = "tag_name";
+    public static final String IS_INTERESTED = "is_interested";
 
 }

@@ -62,7 +62,7 @@ public class EventsDataHelper extends BaseDataHelper {
         if (cursor.moveToFirst()) {
             ArrayList<EventModel> eventModelArrayList = new ArrayList<EventModel>();
             do {
-                eventModelArrayList.add(EventModel.fromCursor(cursor, mContext));
+                eventModelArrayList.add(EventModel.fromCursor(mContext, cursor));
             } while (cursor.moveToNext());
             events = eventModelArrayList.toArray(new EventModel[eventModelArrayList.size()]);
         } else {
@@ -75,7 +75,7 @@ public class EventsDataHelper extends BaseDataHelper {
     public EventModel queryById(int eventId) {
         Cursor cursor = query(null, BaseEventsDBInfo.EVENT_ID + "=" + eventId, null, null);
         if (cursor.moveToFirst()) {
-            return EventModel.fromCursor(cursor, mContext);
+            return EventModel.fromCursor(mContext, cursor);
         } else {
             return null;
         }

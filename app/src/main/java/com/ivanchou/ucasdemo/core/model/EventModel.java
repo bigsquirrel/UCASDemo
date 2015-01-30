@@ -53,7 +53,7 @@ public class EventModel {
         originalPic = jsonObject.getString("originalpic");
     }
 
-    public static EventModel fromCursor(Cursor cursor, Context context) {
+    public static EventModel fromCursor(Context context, Cursor cursor) {
         EventModel eventModel = new EventModel();
         eventModel.eventId = cursor.getLong(cursor.getColumnIndex(BaseEventsDBInfo.EVENT_ID));
         eventModel.createdAt = cursor.getString(cursor.getColumnIndex(BaseEventsDBInfo.CREATED_AT));

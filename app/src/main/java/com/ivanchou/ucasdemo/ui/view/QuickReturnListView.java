@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.ivanchou.ucasdemo.R;
+import com.ivanchou.ucasdemo.core.model.TagModel;
 
 /**
  * Created by ivanchou on 1/19/2015.
@@ -23,7 +24,7 @@ public class QuickReturnListView extends ListView implements OnScrollListener {
     private Context mContext;
     private FooterTagsView mFooterTagsView;
     private View mFooterLoadingView;
-    private String[] mTags;
+    private TagModel[] mTags;
 
     private int mItemCount;
     private int mItemOffsetY[];
@@ -67,7 +68,7 @@ public class QuickReturnListView extends ListView implements OnScrollListener {
         setOnScrollListener(this);
     }
 
-    public void setTagsView(FooterTagsView tagsView, String[] tags) {
+    public void setTagsView(FooterTagsView tagsView, TagModel[] tags) {
         if (mFooterTagsView == null) {
             mFooterTagsView = tagsView;
         }
@@ -90,7 +91,7 @@ public class QuickReturnListView extends ListView implements OnScrollListener {
         for (int i = 0; i < mTags.length; i++) {
             final int position = i;
             TextView tv = (TextView) mInflater.inflate(R.layout.textview_tags, mFooterTagsView, false);
-            tv.setText(mTags[i]);
+            tv.setText(mTags[i].tagName);
             tv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

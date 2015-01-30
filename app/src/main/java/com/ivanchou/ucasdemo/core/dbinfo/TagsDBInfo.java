@@ -10,7 +10,8 @@ import com.ivanchou.ucasdemo.core.db.SQLiteTable;
  */
 public class TagsDBInfo extends BaseTagsDBInfo{
 
-    public static final SQLiteTable TABLE = new SQLiteTable(Config.DATABASE.EVENTS_TABLE_NAME)
+    public static final SQLiteTable TABLE = new SQLiteTable(Config.DATABASE.TAGS_TABLE_NAME)
            .addColumn(TAG_ID, DataType.INTEGER)
-           .addColumn(TAG_NAME, DataType.TEXT);
+           .addColumn(TAG_NAME, DataType.TEXT)
+           .addColumn(IS_INTERESTED, DataType.INTEGER);
 }

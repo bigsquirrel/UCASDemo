@@ -21,6 +21,7 @@ import com.ivanchou.ucasdemo.app.Config;
 import com.ivanchou.ucasdemo.core.db.EventsDataHelper;
 import com.ivanchou.ucasdemo.core.db.TagsDataHelper;
 import com.ivanchou.ucasdemo.core.model.EventModel;
+import com.ivanchou.ucasdemo.core.model.TagModel;
 import com.ivanchou.ucasdemo.ui.adapter.EventCursorAdapter;
 import com.ivanchou.ucasdemo.ui.view.FooterTagsView;
 import com.ivanchou.ucasdemo.ui.view.QuickReturnListView;
@@ -50,7 +51,8 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
     private boolean mLoadFromCache;
 
 
-    String[] mTags = {"足球", "技术", "恋爱", "扯蛋", "英语", "C++", "Android"};
+//    String[] mTags = {"足球", "技术", "恋爱", "扯蛋", "英语", "C++", "Android"};
+    TagModel[] mTags;
     int tags = 0;
 
     @Override
@@ -70,6 +72,15 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
         View view = inflater.inflate(R.layout.listview_timeline, container, false);
         mListView = (QuickReturnListView) view.findViewById(R.id.lv_maintimeline);
         footerTagsView = (FooterTagsView) view.findViewById(R.id.ftv_footer);
+
+        // 初始化 tags
+        mTags = new TagModel[10];
+        TagModel tag = new TagModel();
+        for (int i = 0; i < 10; i++) {
+            tag.tagId = i;
+            tag.tagName = "Android" + i;
+            mTags[i] = tag;
+        }
         mListView.setTagsView(footerTagsView, mTags);
         mListView.setDataChangeListener(this);
         mListView.setAdapter(mEventCursorAdapter);
@@ -101,6 +112,7 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
 //            mEventsDataHelper.empty();
             getTagsData();
         } else {
+            mTags =  mTagsDataHelper.query();
             getEventsData();
         }
     }
