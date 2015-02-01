@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Loader;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -13,8 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import com.ivanchou.ucasdemo.R;
 import com.ivanchou.ucasdemo.app.Config;
@@ -24,6 +21,7 @@ import com.ivanchou.ucasdemo.core.model.EventModel;
 import com.ivanchou.ucasdemo.core.model.TagModel;
 import com.ivanchou.ucasdemo.ui.adapter.EventCursorAdapter;
 import com.ivanchou.ucasdemo.ui.view.FooterTagsView;
+import com.ivanchou.ucasdemo.ui.view.FooterTagsView.OnTagClickListener;
 import com.ivanchou.ucasdemo.ui.view.QuickReturnListView;
 import com.ivanchou.ucasdemo.ui.view.QuickReturnListView.DataChangeListener;
 import com.ivanchou.ucasdemo.ui.base.BaseFragment;
@@ -34,15 +32,13 @@ import java.util.List;
 /**
  * Created by ivanchou on 1/19/2015.
  */
-public class TimeLineFragment extends BaseFragment implements OnRefreshListener, DataChangeListener, LoaderCallbacks<Cursor> {
+public class TimeLineFragment extends BaseFragment implements OnRefreshListener, DataChangeListener, OnTagClickListener, LoaderCallbacks<Cursor> {
     private SwipeRefreshLayout mSwipeLayout;// 下拉刷新
     private QuickReturnListView mListView;
-    private List<String> list;// 测试数据
     private List<EventModel> mEventsList;
 
 
     private FooterTagsView footerTagsView;
-    private ArrayAdapter<String> mListAdapter;
     private EventCursorAdapter mEventCursorAdapter;
     private EventsDataHelper mEventsDataHelper;
     private TagsDataHelper mTagsDataHelper;
@@ -50,15 +46,11 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
     private int mPage;
     private boolean mLoadFromCache;
 
-
-//    String[] mTags = {"足球", "技术", "恋爱", "扯蛋", "英语", "C++", "Android"};
-    TagModel[] mTags;
-    int tags = 0;
+    private TagModel[] mTags;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        list = new ArrayList<String>();
         mEventsList = new ArrayList<EventModel>();
         mEventsDataHelper = new EventsDataHelper(context);
         mTagsDataHelper = new TagsDataHelper(context);
@@ -73,15 +65,14 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
         mListView = (QuickReturnListView) view.findViewById(R.id.lv_maintimeline);
         footerTagsView = (FooterTagsView) view.findViewById(R.id.ftv_footer);
 
-        // 初始化 tags
-        mTags = new TagModel[10];
-        TagModel tag = new TagModel();
-        for (int i = 0; i < 10; i++) {
-            tag.tagId = i;
-            tag.tagName = "Android" + i;
-            mTags[i] = tag;
+        mTags = mTagsDataHelper.query();
+        if (mTags != null || mTags.length != 0) {
+            footerTagsView.setCustomTags(mTags);
+            footerTagsView.setOnTagClickListener(this);
+            mListView.setTagsView(footerTagsView);
         }
-        mListView.setTagsView(footerTagsView, mTags);
+
+        // 设置 listview 自动加载下一页
         mListView.setDataChangeListener(this);
         mListView.setAdapter(mEventCursorAdapter);
 
@@ -93,12 +84,6 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
-
-        // 设置 ListView 的 adapter
-//        mListAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, getData());
-//        mListView.setAdapter(mListAdapter);
-//        initEvenListData();
-//        mListView.setAdapter(mEvenListAdapter);
         getLoaderManager().initLoader(0, null, this);
 
         return view;
@@ -107,12 +92,12 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (mTagsDataHelper.query().length == 0) {
+
+        if (mTags.length == 0) {
             // 标签为空则清空所有
-//            mEventsDataHelper.empty();
+            mEventsDataHelper.empty();
             getTagsData();
         } else {
-            mTags =  mTagsDataHelper.query();
             getEventsData();
         }
     }
@@ -175,47 +160,31 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
 
     /**
      * 点击标签触发的回调
-     * @param v
-     * @param position
+     * @param tags 选中的 tag 列表
      */
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
-    public void onTagClickRefresh(View v, int position) {
-        int resId;
-        // 生成 tags 字段，取消选中状态
-        if (((1 << position) & tags) != 0) {
-            resId = R.drawable.tv_unselected_bg;
-            tags &= ~(1 << position);
-        } else { // 选中状态
-            resId = R.drawable.tv_selected_bg;
-            tags |= (1 << position);
-        }
+    public void onTagClickRefresh(int tags) {
 
-        Drawable drawable = getResources().getDrawable(resId);
-        int sdk = android.os.Build.VERSION.SDK_INT;
-        if(sdk >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
-            v.setBackground(drawable);
-        } else {
-            v.setBackgroundDrawable(drawable);
+        if (Config.MODE.ISDEBUG) {
+            Log.e(TAG, "------- tags " + Integer.toBinaryString(tags));
         }
 
         // 刷新 listview
-        getData();
-        mListAdapter.notifyDataSetChanged();
-
-        if (Config.MODE.ISDEBUG) {
-            Toast.makeText(context, mTags[position] + ", " + Integer.toBinaryString(tags), Toast.LENGTH_SHORT).show();
-        }
+//        getData();
+//        mListAdapter.notifyDataSetChanged();
     }
 
     /**
      * 长按标签触发的回调，长按的事件定义为单选
-     * @param v
-     * @param position
+     * @param tags 选中的 tag 列表
      */
     @Override
-    public void onTagLongClickRefresh(View v, int position) {
-        Log.e(TAG, "----on long click refresh----");
+    public void onTagLongClickRefresh(int tags) {
+        if (Config.MODE.ISDEBUG) {
+            Log.e(TAG, "----on long click refresh----");
+            Log.e(TAG, "------- tags " + Integer.toBinaryString(tags));
+        }
     }
 
 

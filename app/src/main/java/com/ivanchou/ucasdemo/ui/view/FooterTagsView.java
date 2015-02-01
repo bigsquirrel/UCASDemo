@@ -2,8 +2,13 @@ package com.ivanchou.ucasdemo.ui.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.ivanchou.ucasdemo.R;
+import com.ivanchou.ucasdemo.core.model.TagModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +18,16 @@ import java.util.List;
  */
 public class FooterTagsView extends ViewGroup {
 
+    private Context mContext;
     private List<List<View>> mAllViews = new ArrayList<List<View>>();// 存储所有的 tag view
     private List<Integer> mLineHeight = new ArrayList<Integer>();
+    private TagModel[] mTags;
+    private LayoutInflater mInflater;
+
+    private int tags;// 纪录选中的 tag
+    private static final int SINGLE_CLICK = 0;
+    private static final int LONG_CLICK = 1;
+    private OnTagClickListener mCallbacks;
 
     /**
      * 代码中 new 的时候调用
@@ -35,6 +48,8 @@ public class FooterTagsView extends ViewGroup {
      */
     public FooterTagsView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        mContext = context;
+        mInflater = LayoutInflater.from(context);
     }
 
     @Override
@@ -154,9 +169,111 @@ public class FooterTagsView extends ViewGroup {
         }
     }
 
-
     @Override
     public LayoutParams generateLayoutParams(AttributeSet attrs) {
         return new MarginLayoutParams(getContext(), attrs);
+    }
+
+    public void setCustomTags(TagModel[] tagModels) {
+        if (tagModels == null || tagModels.length == 0) {
+            setVisibility(View.GONE);
+            return;
+        }
+        mTags = tagModels;
+        initTagsView();
+    }
+
+    private void initTagsView() {
+        removeAllViews();
+        for (int i = 0; i < mTags.length; i++) {
+            TextView tv = (TextView) mInflater.inflate(R.layout.textview_tags, this, false);
+            tv.setText(mTags[i].tagName);
+            tv.setTag(mTags[i]);
+            tv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    calculateTags(v, SINGLE_CLICK);
+                    refreshTagsView();
+                    mCallbacks.onTagClickRefresh(tags);
+                }
+            });
+            tv.setOnLongClickListener(new OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    calculateTags(v, LONG_CLICK);
+                    refreshTagsView();
+                    mCallbacks.onTagLongClickRefresh(tags);
+                    return true;
+                }
+            });
+            addView(tv);
+        }
+    }
+
+    /**
+     * 生成 tags 字段
+     * @param v
+     * @param state
+     */
+    private void calculateTags(View v, int state) {
+        TagModel tagModel = (TagModel) v.getTag();
+        int position = tagModel.tagId;
+
+        switch (state) {
+            case SINGLE_CLICK:
+                // 生成 tags 字段，取消选中状态
+                if (((1 << position) & tags) != 0) {
+                    tags &= ~(1 << position);
+                } else { // 选中状态
+                    tags |= (1 << position);
+                }
+                break;
+
+            case LONG_CLICK:
+                // 取消所有
+                tags = 0;
+                tags |= (1 << position);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 根据 tags 刷新 tagsview 的选中状态
+     */
+    private void refreshTagsView() {
+        View v;
+        int position;
+        int resId;
+        for (int i = 0; i < mTags.length; i++) {
+            v = findViewWithTag(mTags[i]);
+            position = mTags[i].tagId;
+            if (((1 << position) & tags) != 0) {
+                resId = R.drawable.tv_selected_bg;
+            } else {
+                resId = R.drawable.tv_unselected_bg;
+            }
+            v.setBackgroundResource(resId);
+        }
+    }
+
+
+    public void setOnTagClickListener(OnTagClickListener listener) {
+        this.mCallbacks = listener;
+    }
+
+    public interface OnTagClickListener {
+        /**
+         * 点击 tag 触发刷新
+         * @param tags
+         */
+        public void onTagClickRefresh(int tags);
+
+        /**
+         * 长按实现单选
+         * @param tags
+         */
+        public void onTagLongClickRefresh(int tags);
     }
 }

@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import com.ivanchou.ucasdemo.R;
 import com.ivanchou.ucasdemo.core.model.TagModel;
 
+
 /**
  * Created by ivanchou on 1/19/2015.
  */
@@ -24,7 +26,6 @@ public class QuickReturnListView extends ListView implements OnScrollListener {
     private Context mContext;
     private FooterTagsView mFooterTagsView;
     private View mFooterLoadingView;
-    private TagModel[] mTags;
 
     private int mItemCount;
     private int mItemOffsetY[];
@@ -68,12 +69,11 @@ public class QuickReturnListView extends ListView implements OnScrollListener {
         setOnScrollListener(this);
     }
 
-    public void setTagsView(FooterTagsView tagsView, TagModel[] tags) {
+
+    public void setTagsView(FooterTagsView tagsView) {
         if (mFooterTagsView == null) {
             mFooterTagsView = tagsView;
         }
-        mTags = tags;
-        initTagsView();
         getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
@@ -84,54 +84,17 @@ public class QuickReturnListView extends ListView implements OnScrollListener {
                 });
     }
 
-    /**
-     * 根据 mTags 填充 tagsview
-     */
-    private void initTagsView() {
-        for (int i = 0; i < mTags.length; i++) {
-            final int position = i;
-            TextView tv = (TextView) mInflater.inflate(R.layout.textview_tags, mFooterTagsView, false);
-            tv.setText(mTags[i].tagName);
-            tv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mCallbacks.onTagClickRefresh(v, position);
-                }
-            });
-            tv.setOnLongClickListener(new OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    mCallbacks.onTagLongClickRefresh(v, position);
-                    return true;
-                }
-            });
-            mFooterTagsView.addView(tv);
-        }
-    }
 
     public void setDataChangeListener(DataChangeListener listener) {
         this.mCallbacks = listener;
     }
+
 
     public interface DataChangeListener {
         /**
          * 从网络加载更多的数据
          */
         public void onLoadMore();
-
-        /**
-         * 点击 tag 触发刷新
-         * @param v
-         * @param position
-         */
-        public void onTagClickRefresh(View v, int position);
-
-        /**
-         * 长按实现单选
-         * @param v
-         * @param position
-         */
-        public void onTagLongClickRefresh(View v, int position);
     }
 
     public int getListHeight() {

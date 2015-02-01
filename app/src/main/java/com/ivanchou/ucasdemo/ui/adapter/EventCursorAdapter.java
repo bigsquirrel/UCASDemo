@@ -2,6 +2,7 @@ package com.ivanchou.ucasdemo.ui.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
