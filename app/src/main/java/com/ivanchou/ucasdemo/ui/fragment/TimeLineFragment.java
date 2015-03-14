@@ -19,6 +19,7 @@ import com.ivanchou.ucasdemo.core.db.EventsDataHelper;
 import com.ivanchou.ucasdemo.core.db.TagsDataHelper;
 import com.ivanchou.ucasdemo.core.model.EventModel;
 import com.ivanchou.ucasdemo.core.model.TagModel;
+import com.ivanchou.ucasdemo.core.tasker.AllTagsParseTasker;
 import com.ivanchou.ucasdemo.ui.adapter.EventCursorAdapter;
 import com.ivanchou.ucasdemo.ui.view.FooterTagsView;
 import com.ivanchou.ucasdemo.ui.view.FooterTagsView.OnTagClickListener;
@@ -54,6 +55,7 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
     private boolean mLoadFromCache;
 
     private TagModel[] mTags;
+    private HttpUtil mHttpUtil;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,7 +64,7 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
         mEventsDataHelper = new EventsDataHelper(context);
         mTagsDataHelper = new TagsDataHelper(context);
         mEventCursorAdapter = new EventCursorAdapter(context);
-
+        mHttpUtil = new HttpUtil(getActivity());
     }
 
     @Override
@@ -114,7 +116,26 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
      */
     public void getTagsData() {
         // 首先获得所有标签信息存入数据库
-        // 再获取所有活动 调用 getEventsData
+        mHttpUtil.getAllTags(new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                new AllTagsParseTasker(getActivity()) {
+                    @Override
+                    protected void onPostExecute(ArrayList<TagModel> tagModels) {
+                        mTagsDataHelper.bulkInsert(tagModels);
+                        // 再获取所有活动 调用 getEventsData
+                        getEventsData();
+                    }
+                }.execute(response);
+                super.onSuccess(statusCode, headers, response);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+            }
+        });
+
     }
 
     /**
@@ -140,11 +161,10 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
             mLoadFromCache = false;
         }
         // 加载活动
-        HttpUtil httpUtil = new HttpUtil(getActivity());
-        httpUtil.getLatestEvents(mPage, new JsonHttpResponseHandler() {
+        mHttpUtil.getLatestEvents(mPage, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                System.out.println("-------->" + response);
+                Log.e(TAG, "----> " + response);
                 try {
                     if (mPage == 1) {
                         mEventsDataHelper.empty();
@@ -154,19 +174,11 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
                     e.printStackTrace();
                 }
 
-
-                super.onSuccess(statusCode, headers, response);
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                System.out.println("-------->" + response);
-                super.onSuccess(statusCode, headers, response);
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                System.out.println("--------> failure");
+                Log.e(TAG, "----> failure");
                 super.onFailure(statusCode, headers, responseString, throwable);
             }
         });

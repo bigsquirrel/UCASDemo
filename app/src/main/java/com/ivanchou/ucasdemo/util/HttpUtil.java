@@ -47,40 +47,25 @@ public class HttpUtil {
         client.get(url, params, responseHandler);
     }
 
-    public void singUp() {
 
+    /**
+     * 注册
+     */
+    public void singUp() {
 
     }
 
+    /**
+     * 登陆
+     */
     public void logIn() {
 
     }
 
-    public void getLatestEvents(int page, final JsonHttpResponseHandler responseHandler) {
-
-        RequestParams params = new RequestParams();
-        params.put("page", String.valueOf(page));
-        get(LATEST_EVENTS, params, new JsonHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                responseHandler.onSuccess(statusCode, headers, response);
-                super.onSuccess(statusCode, headers, response);
-            }
-
-//            @Override
-//            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-//                responseHandler.onSuccess(statusCode, headers, response);
-//                super.onSuccess(statusCode, headers, response);
-//            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
-            }
-        });
-    }
-
+    /**
+     * 获取所有标签
+     * @param responseHandler
+     */
     public void getAllTags(final JsonHttpResponseHandler responseHandler) {
         get(TAGS, null, new JsonHttpResponseHandler() {
             @Override
@@ -96,7 +81,120 @@ public class HttpUtil {
         });
     }
 
+    /**
+     * 获取主时间线（不带参数的）
+     * @param page
+     * @param responseHandler
+     */
+    public void getLatestEvents(int page, final JsonHttpResponseHandler responseHandler) {
 
+        RequestParams params = new RequestParams();
+        params.put("page", String.valueOf(page));
+        get(LATEST_EVENTS, params, new JsonHttpResponseHandler() {
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                responseHandler.onSuccess(statusCode, headers, response);
+                super.onSuccess(statusCode, headers, response);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+            }
+        });
+    }
+
+    /**
+     * 获取活动详情
+     * @param eventId 活动id
+     * @param responseHandler
+     */
+    public void getEventByEventId(int eventId, JsonHttpResponseHandler responseHandler) {
+
+    }
+
+    /**
+     * 修改活动信息
+     * @param eventId
+     * @param responseHandler
+     */
+    public void modifyEventByEventId(int eventId, JsonHttpResponseHandler responseHandler) {
+
+    }
+
+    /**
+     * 删除某一活动
+     * @param eventId
+     * @param responseHandler
+     */
+    public void deleteEventByEventId(int eventId, JsonHttpResponseHandler responseHandler) {
+
+    }
+
+    /**
+     * 根据用户ID获取用户信息
+     * @param userId
+     * @param responseHandler
+     */
+    public void getUserInfoByUserId(int userId, JsonHttpResponseHandler responseHandler) {
+
+    }
+
+    /**
+     * 获取个人信息
+     * @param responseHandler
+     */
+    public void getSelfInfo(JsonHttpResponseHandler responseHandler) {
+
+    }
+
+    /**
+     * 修改个人信息
+     */
+    public void modifySelfInfo() {
+
+    }
+
+    /**
+     * 获取参加活动的用户列表
+     * @param eventId
+     * @param responseHandler
+     */
+    public void getJointedUserOfEvent(int eventId, JsonHttpResponseHandler responseHandler) {
+
+    }
+
+    /**
+     * 获取用户发布活动纪录
+     * @param page
+     * @param pageSize
+     * @param beginId
+     * @param responseHandler
+     */
+    public void getEventByUserId(int page, int pageSize, int beginId, JsonHttpResponseHandler responseHandler) {
+
+    }
+
+    /**
+     * 获取用户参与的活动纪录
+     * @param page
+     * @param pageSize
+     * @param beginId
+     * @param responseHandler
+     */
+    public void getJointedEventOfUser(int page, int pageSize, int beginId, JsonHttpResponseHandler responseHandler) {
+
+    }
+
+    /**
+     * 改变参与否状态
+     * @param eventId
+     * @param responseHandler
+     */
+    public void changeStateOfEvent(int eventId, JsonHttpResponseHandler responseHandler) {
+
+    }
 
     /** 注册 **/
     private static final String SIGN_UP = Config.URL.COMMON + "authorize/newregister.html";

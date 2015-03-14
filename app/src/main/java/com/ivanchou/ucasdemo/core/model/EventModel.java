@@ -51,7 +51,13 @@ public class EventModel {
         eventId = jsonObject.getLong("activityid");
         createdAt = jsonObject.getString("createdat");
         jointed = jsonObject.getInt("jointed");
-        author.parse(jsonObject.getJSONObject("author"));
+
+        /** 注释掉的功能上相同 根据返回的 json 格式选择 **/
+        author.userId = jsonObject.getInt("authorid");
+        author.name = jsonObject.getString("authornick");
+        author.avatar = jsonObject.getString("authorphoto");
+//        author.parse(jsonObject.getJSONObject("author"));
+
         startAt = jsonObject.getString("startat");
         endAt = jsonObject.getString("endat");
         endrollBefore = jsonObject.getString("endrollbefore");

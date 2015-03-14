@@ -1,15 +1,17 @@
 package com.ivanchou.ucasdemo.core.db;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.nfc.Tag;
 
 import com.ivanchou.ucasdemo.app.Config;
 import com.ivanchou.ucasdemo.core.DataProvider;
+import com.ivanchou.ucasdemo.core.dbinfo.TagsDBInfo;
 import com.ivanchou.ucasdemo.core.model.TagModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by ivanchou on 1/27/2015.
@@ -20,6 +22,15 @@ public class TagsDataHelper extends BaseDataHelper {
     public TagsDataHelper(Context context) {
         super(context);
         mContext = context;
+    }
+
+    protected ContentValues getContentValues(TagModel tag) {
+        ContentValues values = new ContentValues();
+
+        values.put(TagsDBInfo.TAG_ID, tag.tagId);
+        values.put(TagsDBInfo.TAG_NAME, tag.tagName);
+
+        return values;
     }
 
     @Override
@@ -46,5 +57,16 @@ public class TagsDataHelper extends BaseDataHelper {
         }
         cursor.close();
         return tags;
+    }
+
+
+    public int bulkInsert(List<TagModel> tags) {
+        ArrayList<ContentValues> contentValues = new ArrayList<ContentValues>();
+        for(TagModel tag : tags){
+            ContentValues values = getContentValues(tag);
+            contentValues.add(values);
+        }
+        ContentValues[] valueArray = new ContentValues[contentValues.size()];
+        return bulkInsert(contentValues.toArray(valueArray));
     }
 }
