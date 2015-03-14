@@ -25,6 +25,13 @@ import com.ivanchou.ucasdemo.ui.view.FooterTagsView.OnTagClickListener;
 import com.ivanchou.ucasdemo.ui.view.QuickReturnListView;
 import com.ivanchou.ucasdemo.ui.view.QuickReturnListView.DataChangeListener;
 import com.ivanchou.ucasdemo.ui.base.BaseFragment;
+import com.ivanchou.ucasdemo.util.HttpUtil;
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.apache.http.Header;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,7 +140,36 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
             mLoadFromCache = false;
         }
         // 加载活动
+        HttpUtil httpUtil = new HttpUtil(getActivity());
+        httpUtil.getLatestEvents(mPage, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                System.out.println("-------->" + response);
+                try {
+                    if (mPage == 1) {
+                        mEventsDataHelper.empty();
+                    }
+                    mEventsDataHelper.bulkInsert(getModels(response.getJSONArray("activities")));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
+
+                super.onSuccess(statusCode, headers, response);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                System.out.println("-------->" + response);
+                super.onSuccess(statusCode, headers, response);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                System.out.println("--------> failure");
+                super.onFailure(statusCode, headers, responseString, throwable);
+            }
+        });
     }
 
 
@@ -221,6 +257,16 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
         }
     }
 
+
+    private ArrayList<EventModel> getModels(JSONArray response) throws JSONException {
+        ArrayList<EventModel> models = new ArrayList<EventModel>();
+        for(int i = 0; i < response.length(); i++){
+            EventModel model = new EventModel();
+            model.parse(response.getJSONObject(i));
+            models.add(model);
+        }
+        return models;
+    }
 
 //    /**
 //     * 填充假数据 simple list view

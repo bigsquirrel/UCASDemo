@@ -23,6 +23,10 @@ public class EventModel {
 
     public String startAt;// 事件的开始时间
 
+    public String endAt;// 事件的结束时间
+
+    public String endrollBefore;// 报名截至时间
+
     public String placeAt;// 事件的地点
 
     public String title;// 事件的主题
@@ -30,6 +34,10 @@ public class EventModel {
     public String content;// 事件的详细内容
 
     public long tags;// 事件的标签属性
+
+    public long maxPeople;// 活动的最大人数限制
+
+    public int restriction;// 访问权限
 
     public String thumbnailPic;
 
@@ -40,15 +48,19 @@ public class EventModel {
     }
 
     public void parse(JSONObject jsonObject) throws JSONException {
-        eventId = jsonObject.getLong("eventid");
-        createdAt = jsonObject.getString("createat");
+        eventId = jsonObject.getLong("activityid");
+        createdAt = jsonObject.getString("createdat");
         jointed = jsonObject.getInt("jointed");
         author.parse(jsonObject.getJSONObject("author"));
         startAt = jsonObject.getString("startat");
+        endAt = jsonObject.getString("endat");
+        endrollBefore = jsonObject.getString("endrollbefore");
         placeAt = jsonObject.getString("placeat");
         title = jsonObject.getString("title");
         content = jsonObject.getString("text");
         tags = jsonObject.getLong("tags");
+        maxPeople = jsonObject.getLong("maxpeople");
+        restriction = jsonObject.getInt("restriction");
         thumbnailPic = jsonObject.getString("thumbnailpic");
         originalPic = jsonObject.getString("originalpic");
     }
@@ -66,10 +78,14 @@ public class EventModel {
         eventModel.author = userModel;
 
         eventModel.startAt = cursor.getString(cursor.getColumnIndex(BaseEventsDBInfo.START_AT));
+        eventModel.endAt = cursor.getString(cursor.getColumnIndex(BaseEventsDBInfo.END_AT));
+        eventModel.endrollBefore = cursor.getString(cursor.getColumnIndex(BaseEventsDBInfo.ENDROLL_BEFORE));
         eventModel.placeAt = cursor.getString(cursor.getColumnIndex(BaseEventsDBInfo.PLACE_AT));
         eventModel.title = cursor.getString(cursor.getColumnIndex(BaseEventsDBInfo.TITLE));
         eventModel.content = cursor.getString(cursor.getColumnIndex(BaseEventsDBInfo.CONTENT));
         eventModel.tags = cursor.getLong(cursor.getColumnIndex(BaseEventsDBInfo.TAGS));
+        eventModel.maxPeople = cursor.getLong(cursor.getColumnIndex(BaseEventsDBInfo.MAX_PEOPLE));
+        eventModel.restriction = cursor.getInt(cursor.getColumnIndex(BaseEventsDBInfo.RESTRICTION));
         eventModel.thumbnailPic = cursor.getString(cursor.getColumnIndex(BaseEventsDBInfo.THUMBNAIL_PIC));
         eventModel.originalPic = cursor.getString(cursor.getColumnIndex(BaseEventsDBInfo.ORIGINAL_PIC));
         return eventModel;

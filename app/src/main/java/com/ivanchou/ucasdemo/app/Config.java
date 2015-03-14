@@ -11,9 +11,9 @@ public class Config {
     public static final String PREFS_NAME = "ucasdemo";//SharedPreferences 名字
 
     public static final class URL {
-        public static final String SERVER = "https://192.168.1.101/";
-        public static final String COMMON = "https://192.168.1.101/api/";
-        public static final String CAPTCHA = COMMON + "getCaptcha";
+        public static final String SERVER = "http://ssh.freeshell.ustc.edu.cn:43175/iplay2.3/";
+        public static final String COMMON = SERVER + "api/";
+        public static final String CAPTCHA = COMMON + "getCaptcha"; //验证码
         public static final String LOGIN = COMMON + "login";
     }
 
