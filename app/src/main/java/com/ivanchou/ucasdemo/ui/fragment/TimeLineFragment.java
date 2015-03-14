@@ -206,9 +206,15 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
             Log.e(TAG, "------- tags " + Integer.toBinaryString(tags));
         }
 
-        // 刷新 listview
-//        getData();
-//        mListAdapter.notifyDataSetChanged();
+        /**
+         * 1. 在本地过滤一遍
+         * 2. 请求服务器
+         * 3. 服务器响应后清空本地
+         */
+
+        // 服务器获取数据
+        getData();
+        // changeCursor
     }
 
     /**
