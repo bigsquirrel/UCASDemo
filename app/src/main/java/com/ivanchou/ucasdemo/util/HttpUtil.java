@@ -20,34 +20,7 @@ import org.json.JSONObject;
  */
 public class HttpUtil {
     private final String TAG = this.getClass().getSimpleName();
-    private Context mContext;
-    private static AsyncHttpClient client = new AsyncHttpClient();
-
-    public HttpUtil(Context context) {
-        this.mContext = context;
-        client.setTimeout(10 * 1000);
-        client.setCookieStore(new PersistentCookieStore(mContext));
-        client.addHeader("user-agent", "ucasdemo");
-    }
-
-    /** post数据交互 */
-    public void post(String url, RequestParams params,
-                     TextHttpResponseHandler responseHandler) {
-        client.post(url, params, responseHandler);
-    }
-
-    /** get数据交互 */
-    public void get(String url, RequestParams params,
-                    AsyncHttpResponseHandler responseHandler) {
-        client.get(url, params, responseHandler);
-    }
-    /** get数据交互 */
-    public void get(String url, RequestParams params,
-                    TextHttpResponseHandler responseHandler) {
-        client.get(url, params, responseHandler);
-    }
-
-
+    
     /**
      * 注册
      */
