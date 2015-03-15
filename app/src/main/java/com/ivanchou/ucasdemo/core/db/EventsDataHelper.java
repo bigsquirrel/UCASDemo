@@ -45,10 +45,14 @@ public class EventsDataHelper extends BaseDataHelper {
         values.put(EventsDBInfo.USER_NAME, event.author.name);
         values.put(EventsDBInfo.USER_AVATAR, event.author.avatar);
         values.put(EventsDBInfo.START_AT, event.startAt);
+        values.put(EventsDBInfo.END_AT, event.endAt);
+        values.put(EventsDBInfo.ENDROLL_BEFORE, event.endrollBefore);
         values.put(EventsDBInfo.PLACE_AT, event.placeAt);
         values.put(EventsDBInfo.TITLE, event.title);
         values.put(EventsDBInfo.CONTENT, event.content);
         values.put(EventsDBInfo.TAGS, event.tags);
+        values.put(EventsDBInfo.MAX_PEOPLE, event.maxPeople);
+        values.put(EventsDBInfo.RESTRICTION, event.restriction);
         values.put(EventsDBInfo.THUMBNAIL_PIC, event.thumbnailPic);
         values.put(EventsDBInfo.ORIGINAL_PIC, event.originalPic);
 

@@ -2,6 +2,7 @@ package com.ivanchou.ucasdemo.core.model;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 import com.ivanchou.ucasdemo.core.dbinfo.BaseEventsDBInfo;
 
@@ -50,24 +51,26 @@ public class EventModel {
     public void parse(JSONObject jsonObject) throws JSONException {
         eventId = jsonObject.getLong("activityid");
         createdAt = jsonObject.getString("createdat");
-        jointed = jsonObject.getInt("jointed");
+//        jointed = jsonObject.getInt("jointed");
 
         /** 注释掉的功能上相同 根据返回的 json 格式选择 **/
+        author = new UserModel();
         author.userId = jsonObject.getInt("authorid");
-        author.name = jsonObject.getString("authornick");
-        author.avatar = jsonObject.getString("authorphoto");
+//        author.name = jsonObject.getString("authornick");
+//        author.avatar = jsonObject.getString("authorphoto");
+
 //        author.parse(jsonObject.getJSONObject("author"));
 
         startAt = jsonObject.getString("startat");
         endAt = jsonObject.getString("endat");
-        endrollBefore = jsonObject.getString("endrollbefore");
+//        endrollBefore = jsonObject.getString("endrollbefore");
         placeAt = jsonObject.getString("placeat");
         title = jsonObject.getString("title");
         content = jsonObject.getString("text");
         tags = jsonObject.getLong("tags");
         maxPeople = jsonObject.getLong("maxpeople");
-        restriction = jsonObject.getInt("restriction");
-        thumbnailPic = jsonObject.getString("thumbnailpic");
+//        restriction = jsonObject.getInt("restriction");
+//        thumbnailPic = jsonObject.getString("thumbnailpic");
         originalPic = jsonObject.getString("originalpic");
     }
 

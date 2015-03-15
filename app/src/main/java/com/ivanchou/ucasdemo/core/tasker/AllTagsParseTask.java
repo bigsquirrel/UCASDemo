@@ -1,10 +1,8 @@
 package com.ivanchou.ucasdemo.core.tasker;
 
 import android.content.Context;
-import android.nfc.Tag;
 import android.os.AsyncTask;
 
-import com.ivanchou.ucasdemo.core.model.EventModel;
 import com.ivanchou.ucasdemo.core.model.TagModel;
 
 import org.json.JSONArray;
@@ -15,11 +13,11 @@ import java.util.ArrayList;
 /**
  * Created by ivanchou on 3/14/15.
  */
-public abstract class AllTagsParseTasker extends AsyncTask<JSONArray, Void, ArrayList<TagModel>> {
+public abstract class AllTagsParseTask extends AsyncTask<JSONArray, Void, ArrayList<TagModel>> {
 
     private Context mContext;
 
-    protected AllTagsParseTasker(Context mContext) {
+    protected AllTagsParseTask(Context mContext) {
         this.mContext = mContext;
     }
 

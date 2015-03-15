@@ -51,23 +51,38 @@ public class HttpUtil {
     /**
      * 注册
      */
-    public void singUp() {
+    public static void singUp(Context context) {
 
     }
 
     /**
      * 登陆
      */
-    public void logIn() {
+    public static void logIn(Context context, String name, String pwd, final JsonHttpResponseHandler responseHandler) {
+        RequestParams params = new RequestParams();
+        params.put("username", name);
+        params.put("password", StringUtil.parseStringToMD5(pwd));
+        new AsyncHttpClient().post(context, LOG_IN, params, new TextHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                System.out.println(responseString);
+                responseHandler.onSuccess(statusCode, headers, responseString);
+            }
 
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+
+            }
+
+        });
     }
 
     /**
      * 获取所有标签
      * @param responseHandler
      */
-    public void getAllTags(final JsonHttpResponseHandler responseHandler) {
-        get(TAGS, null, new JsonHttpResponseHandler() {
+    public static void getAllTags(Context context, final JsonHttpResponseHandler responseHandler) {
+        new AsyncHttpClient().get(context, TAGS, null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 responseHandler.onSuccess(statusCode, headers, response);
@@ -86,11 +101,11 @@ public class HttpUtil {
      * @param page
      * @param responseHandler
      */
-    public void getLatestEvents(int page, final JsonHttpResponseHandler responseHandler) {
+    public static void getLatestEvents(Context context, int page, final JsonHttpResponseHandler responseHandler) {
 
         RequestParams params = new RequestParams();
         params.put("page", String.valueOf(page));
-        get(LATEST_EVENTS, params, new JsonHttpResponseHandler() {
+        new AsyncHttpClient().get(context, LATEST_EVENTS, params, new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -110,8 +125,22 @@ public class HttpUtil {
      * @param eventId 活动id
      * @param responseHandler
      */
-    public void getEventByEventId(int eventId, JsonHttpResponseHandler responseHandler) {
+    public static void getEventByEventId(Context context, int eventId, JsonHttpResponseHandler responseHandler) {
+        RequestParams params = new RequestParams();
+        SharedPreferencesUtil sp = SharedPreferencesUtil.getSharedPreferencesUtil(context);
+        params.put("sessionid", sp.get("sessionid"));
+        params.put("activityid", eventId);
+        new AsyncHttpClient().get(context, EVENT_DETAILS, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+            }
 
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+            }
+        });
     }
 
     /**
@@ -119,7 +148,7 @@ public class HttpUtil {
      * @param eventId
      * @param responseHandler
      */
-    public void modifyEventByEventId(int eventId, JsonHttpResponseHandler responseHandler) {
+    public static void modifyEventByEventId(Context context, int eventId, JsonHttpResponseHandler responseHandler) {
 
     }
 
@@ -128,7 +157,7 @@ public class HttpUtil {
      * @param eventId
      * @param responseHandler
      */
-    public void deleteEventByEventId(int eventId, JsonHttpResponseHandler responseHandler) {
+    public static void deleteEventByEventId(Context context, int eventId, JsonHttpResponseHandler responseHandler) {
 
     }
 
@@ -137,7 +166,7 @@ public class HttpUtil {
      * @param userId
      * @param responseHandler
      */
-    public void getUserInfoByUserId(int userId, JsonHttpResponseHandler responseHandler) {
+    public static void getUserInfoByUserId(Context context, int userId, JsonHttpResponseHandler responseHandler) {
 
     }
 
@@ -145,14 +174,14 @@ public class HttpUtil {
      * 获取个人信息
      * @param responseHandler
      */
-    public void getSelfInfo(JsonHttpResponseHandler responseHandler) {
+    public static void getSelfInfo(Context context, JsonHttpResponseHandler responseHandler) {
 
     }
 
     /**
      * 修改个人信息
      */
-    public void modifySelfInfo() {
+    public static void modifySelfInfo(Context context) {
 
     }
 
@@ -161,7 +190,7 @@ public class HttpUtil {
      * @param eventId
      * @param responseHandler
      */
-    public void getJointedUserOfEvent(int eventId, JsonHttpResponseHandler responseHandler) {
+    public static void getJointedUserOfEvent(Context context, int eventId, JsonHttpResponseHandler responseHandler) {
 
     }
 
@@ -172,7 +201,7 @@ public class HttpUtil {
      * @param beginId
      * @param responseHandler
      */
-    public void getEventByUserId(int page, int pageSize, int beginId, JsonHttpResponseHandler responseHandler) {
+    public static void getEventByUserId(Context context, int page, int pageSize, int beginId, JsonHttpResponseHandler responseHandler) {
 
     }
 
@@ -183,7 +212,7 @@ public class HttpUtil {
      * @param beginId
      * @param responseHandler
      */
-    public void getJointedEventOfUser(int page, int pageSize, int beginId, JsonHttpResponseHandler responseHandler) {
+    public static void getJointedEventOfUser(Context context, int page, int pageSize, int beginId, JsonHttpResponseHandler responseHandler) {
 
     }
 
@@ -192,7 +221,7 @@ public class HttpUtil {
      * @param eventId
      * @param responseHandler
      */
-    public void changeStateOfEvent(int eventId, JsonHttpResponseHandler responseHandler) {
+    public static void changeStateOfEvent(Context context, int eventId, JsonHttpResponseHandler responseHandler) {
 
     }
 

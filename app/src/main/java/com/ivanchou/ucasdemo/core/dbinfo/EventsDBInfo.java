@@ -18,10 +18,14 @@ public class EventsDBInfo extends BaseEventsDBInfo {
             .addColumn(USER_NAME, DataType.TEXT)
             .addColumn(USER_AVATAR, DataType.TEXT)
             .addColumn(START_AT, DataType.TEXT)
+            .addColumn(END_AT, DataType.TEXT)
+            .addColumn(ENDROLL_BEFORE, DataType.TEXT)
             .addColumn(PLACE_AT, DataType.TEXT)
             .addColumn(TITLE, DataType.TEXT)
             .addColumn(CONTENT, DataType.TEXT)
             .addColumn(TAGS, DataType.INTEGER)
+            .addColumn(MAX_PEOPLE, DataType.INTEGER)
+            .addColumn(RESTRICTION, DataType.INTEGER)
             .addColumn(THUMBNAIL_PIC, DataType.TEXT)
             .addColumn(ORIGINAL_PIC, DataType.TEXT);
 }

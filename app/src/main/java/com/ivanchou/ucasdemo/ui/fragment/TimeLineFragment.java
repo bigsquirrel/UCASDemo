@@ -19,7 +19,7 @@ import com.ivanchou.ucasdemo.core.db.EventsDataHelper;
 import com.ivanchou.ucasdemo.core.db.TagsDataHelper;
 import com.ivanchou.ucasdemo.core.model.EventModel;
 import com.ivanchou.ucasdemo.core.model.TagModel;
-import com.ivanchou.ucasdemo.core.tasker.AllTagsParseTasker;
+import com.ivanchou.ucasdemo.core.tasker.AllTagsParseTask;
 import com.ivanchou.ucasdemo.ui.adapter.EventCursorAdapter;
 import com.ivanchou.ucasdemo.ui.view.FooterTagsView;
 import com.ivanchou.ucasdemo.ui.view.FooterTagsView.OnTagClickListener;
@@ -116,18 +116,23 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
      */
     public void getTagsData() {
         // 首先获得所有标签信息存入数据库
-        mHttpUtil.getAllTags(new JsonHttpResponseHandler() {
+        HttpUtil.getAllTags(getActivity(), new JsonHttpResponseHandler() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                new AllTagsParseTasker(getActivity()) {
-                    @Override
-                    protected void onPostExecute(ArrayList<TagModel> tagModels) {
-                        mTagsDataHelper.bulkInsert(tagModels);
-                        // 再获取所有活动 调用 getEventsData
-                        getEventsData();
-                    }
-                }.execute(response);
-                super.onSuccess(statusCode, headers, response);
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.e(TAG, "----> " + response);
+                try {
+                    JSONArray array = response.getJSONArray("academies");
+                    new AllTagsParseTask(getActivity()) {
+                        @Override
+                        protected void onPostExecute(ArrayList<TagModel> tagModels) {
+                            mTagsDataHelper.bulkInsert(tagModels);
+                            // 再获取所有活动 调用 getEventsData
+                            getEventsData();
+                        }
+                    }.execute(array);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -161,7 +166,7 @@ public class TimeLineFragment extends BaseFragment implements OnRefreshListener,
             mLoadFromCache = false;
         }
         // 加载活动
-        mHttpUtil.getLatestEvents(mPage, new JsonHttpResponseHandler() {
+        HttpUtil.getLatestEvents(getActivity(), mPage, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Log.e(TAG, "----> " + response);
